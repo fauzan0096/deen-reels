@@ -1,4 +1,4 @@
-# Deen Reels
+# Deen Reels — ورثة الانبياء
 
 Roz ek **sahabi ka waqiya** — Urdu narration, 1080x1920 video, aur har video
 ke aakhir me **asal hawala** (kitab + hadees number + jild/safha).
