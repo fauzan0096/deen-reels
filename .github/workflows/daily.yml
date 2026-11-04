@@ -43,7 +43,8 @@ jobs:
           CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'Deen Reels' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
-          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && 'yes' || 'no' }}
+          # Manual run: dry_run tick. Rozana (schedule): repo Variable DRY_RUN chalti hai.
+          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && 'yes' || vars.DRY_RUN || 'no' }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
