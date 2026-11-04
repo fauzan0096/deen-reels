@@ -29,8 +29,11 @@ def _error_text(exc: Exception) -> str:
 
     if "invalid_grant" in lowered or "invalid grant" in lowered:
         return (
-            "Refresh token expire ya cancel ho gaya (Testing mode me 7 din me hota hai). "
-            "scripts/youtube_auth.py dobara chalaiye, ya OAuth Playground se naya token lijiye."
+            "Google ne token reject kar diya. Teen wajah ho sakti hain: (1) refresh token "
+            "expire/cancel ho gaya, (2) value ke saath extra quotes ya space aa gaye, "
+            "(3) client ID/secret wahi nahi hain jisse token bana tha. "
+            "Behtar hal: Clients se Client ID + secret fresh copy karo, myaccount.google.com/"
+            "permissions se purana access hatao, phir naya refresh token lo."
         )
     if "quotaexceeded" in lowered:
         return (

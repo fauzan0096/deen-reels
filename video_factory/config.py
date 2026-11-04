@@ -29,6 +29,9 @@ def _env(name: str, default: str = "") -> str:
     if value is None:
         return default
     value = value.strip()
+    # JSON se copy karte waqt value ke saath quotes bhi aa jate hain.
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        value = value[1:-1].strip()
     return value or default
 
 
