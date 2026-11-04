@@ -1,0 +1,83 @@
+name: Daily Deen Reel
+
+on:
+  schedule:
+    # Roz 08:00 IST (02:30 UTC). Ghadi set karni ho to yahan cron badaiye.
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Sirf video banao, publish mat karo"
+        type: boolean
+        default: true
+
+concurrency:
+  group: daily-reel
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build and publish
+        env:
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'Deen Reels' }}
+          VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          PRIVACY: ${{ vars.PRIVACY || 'public' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && 'yes' || 'no' }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PUBLIC_MEDIA_BASE_URL: ${{ vars.PUBLIC_MEDIA_BASE_URL }}
+        run: python -m video_factory.main
+
+      - name: Upload video artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel
+          path: |
+            out/video.mp4
+            out/metadata.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Commit posting state
+        if: always()
+        run: |
+          if [ ! -f state.json ]; then
+            echo "state.json nahi mili, kuch commit nahi."
+            exit 0
+          fi
+          git config user.name "deen-reels-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.json
+          if git diff --cached --quiet; then
+            echo "State me koi change nahi."
+          else
+            git commit -m "chore: update posting state"
+            git push
+          fi

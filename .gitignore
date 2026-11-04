@@ -1,0 +1,10 @@
+.env
+out/
+.cache/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+client_secret*.json
+token*.json
