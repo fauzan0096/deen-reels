@@ -28,7 +28,7 @@ jobs:
 
       - name: Run checks
         env:
-          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'Warsatul Anbiya' }}
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}

@@ -28,7 +28,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Header,Noto Sans,30,&H66FFFFFF,&H00FFFFFF,&H00120F0A,&H00000000,0,0,0,0,100,100,3,0,1,2,1,5,60,60,0,1
+Style: Header,Noto Naskh Arabic,34,&H66FFFFFF,&H00FFFFFF,&H00120F0A,&H00000000,0,0,0,0,100,100,3,0,1,2,1,5,60,60,0,1
 Style: Title,Noto Naskh Arabic,70,&H00FFFFFF,&H000000FF,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,4,3,5,70,70,0,1
 Style: Label,Noto Naskh Arabic,34,&H99E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,5,60,60,0,1
 Style: Arabic,Noto Naskh Arabic,48,&H00F5E9D0,&H000000FF,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,60,60,0,1
