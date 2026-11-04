@@ -40,7 +40,7 @@ jobs:
 
       - name: Build and publish
         env:
-          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'Deen Reels' }}
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'Warsatul Anbiya' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
           # Manual run: dry_run tick. Rozana (schedule): repo Variable DRY_RUN chalti hai.

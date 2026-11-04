@@ -39,7 +39,7 @@ def _env_bool(name: str, default: bool = False) -> bool:
 
 @dataclass
 class Config:
-    channel_name: str = "Deen Reels"
+    channel_name: str = "Warsatul Anbiya"
     lang: str = "ur"
     voice: str = ""
     tts_rate: str = "+0%"
