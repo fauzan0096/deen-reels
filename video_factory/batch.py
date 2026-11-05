@@ -17,6 +17,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import subprocess
 import time
 import traceback
 from pathlib import Path
@@ -80,7 +81,7 @@ GALLERY = """<!doctype html>
 CARD = """  <section class="card">
     <h2>{title}</h2>
     <p class="sub">{subtitle}</p>
-    <video controls playsinline preload="metadata" src="{file}"></video>
+    <video controls playsinline preload="none" poster="{poster}" src="{file}"></video>
     <p class="hawala">{hawala}</p>
     <p style="margin-top:12px">
       <a class="dl" href="{file}" download="{download}">ڈاؤن لوڈ</a>
@@ -162,6 +163,34 @@ def _nav(items: list, index: int) -> str:
     return " ".join(links)
 
 
+def make_thumbnail(video: Path, out: Path, at: float = 1.2) -> Path | None:
+    """Video ke ek frame se thumbnail — text video ke andar hi ban chuka hai
+    (Arabic shaping libass karta hai, PIL nahi kar sakta)."""
+    if not video.exists():
+        return None
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-ss",
+            f"{at:.2f}",
+            "-i",
+            str(video),
+            "-frames:v",
+            "1",
+            "-q:v",
+            "3",
+            str(out),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    return out if out.exists() and out.stat().st_size > 1000 else None
+
+
 def build_episode_pages(items: list, out_root: Path) -> None:
     for index, item in enumerate(items):
         (out_root / item["dir"] / "index.html").write_text(
@@ -185,6 +214,7 @@ def build_gallery(items: list, path: Path) -> Path:
             file=html.escape(item["file"]),
             page=html.escape(f"{item['dir']}/index.html"),
             download=html.escape(item["download"]),
+            poster=html.escape(item.get("poster", "")),
         )
         for item in items
     )
@@ -248,6 +278,10 @@ def main() -> int:
             "duration_seconds": round(info["duration"], 2),
             "video_title": info["script"].title,
         }
+        # Thumbnail (hook ka frame) — gallery aur YouTube ke liye.
+        thumb = make_thumbnail(info["video"], folder / "thumbnail.jpg")
+        if thumb is not None:
+            item["poster"] = f"{folder.name}/thumbnail.jpg"
         (folder / "metadata.json").write_text(
             json.dumps(item, ensure_ascii=False, indent=2), encoding="utf-8"
         )

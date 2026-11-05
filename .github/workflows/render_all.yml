@@ -78,8 +78,12 @@ jobs:
           mkdir release_assets
           for f in out/all/*/video.mp4; do
             [ -f "$f" ] || continue
-            name=$(basename "$(dirname "$f")")
+            dir=$(dirname "$f")
+            name=$(basename "$dir")
             cp "$f" "release_assets/$name.mp4"
+            if [ -f "$dir/thumbnail.jpg" ]; then
+              cp "$dir/thumbnail.jpg" "release_assets/$name.jpg"
+            fi
           done
           ls -1 release_assets || true
           gh release view parts >/dev/null 2>&1 || \
@@ -88,7 +92,7 @@ jobs:
               --notes "Har hissa alag file — dekhne aur download karne ke liye." \
             || true
           if ls release_assets/*.mp4 >/dev/null 2>&1; then
-            gh release upload parts release_assets/*.mp4 --clobber || \
+            gh release upload parts release_assets/* --clobber || \
               echo "Release upload skip."
           fi
 
