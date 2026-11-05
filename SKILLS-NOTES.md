@@ -1,9 +1,9 @@
-# Skills — kya apnaya, kya nahi
+# Skills — kya apnaya
 
-Repo me uploaded skills padhe gaye (`SKILL.md` — cartoon 3D short, `SKILL 2.md` —
-Hassan intro editor, `meri-skills-sab-ek-file.md`). Ye channel in se alag hai
-(koi presenter footage nahi, koi Remotion/three.js nahi), is liye sirf wo
-usool liye jo yahan lagte hain:
+Uploaded skills (3D cartoon short, presenter intro editor, shorts/YouTube agent
+packs) padhe gaye the. Wo zyada tar doosre format ke liye the — Remotion/three.js
+cartoon, presenter footage, brand graphics — is liye files hata di gayi aur sirf
+wo usool rakhe gaye jo is channel par lagte hain. Ye note wahi nichor hai.
 
 ## Apnaye gaye
 
