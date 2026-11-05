@@ -22,79 +22,86 @@
 <body>
 <header>
   <h1>ویڈیوز</h1>
-  <p>ورثة الانبياء — بغیر ڈاؤن لوڈ، یہیں چلا کر دیکھیں</p>
+  <p>ورثة الانبياء — یہیں چلا کر دیکھیں</p>
 </header>
 <main id="list">
   <p class="empty">لوڈ ہو رہی ہیں…</p>
 </main>
 <script>
   const REPO = "fauzan0096/deen-reels";
-  const TREE = `https://api.github.com/repos/${REPO}/git/trees/gh-pages?recursive=1`;
-  const RAW = `https://raw.githubusercontent.com/${REPO}/gh-pages/`;
+  const TREE = "https://api.github.com/repos/" + REPO + "/git/trees/gh-pages?recursive=1";
+  const RAW = "https://raw.githubusercontent.com/" + REPO + "/gh-pages/";
 
-  function pretty(path) {
-    const name = path.split("/").filter(Boolean).slice(-2, -1)[0] || path;
-    return name.replace(/-/g, " ");
-  }
-
-  function card(path) {
+  function makeCard(src, title) {
     const wrap = document.createElement("section");
     wrap.className = "card";
     const h = document.createElement("h2");
-    h.textContent = pretty(path);
+    h.textContent = title;
     const v = document.createElement("video");
     v.controls = true;
     v.playsInline = true;
     v.setAttribute("webkit-playsinline", "");
-    v.preload = "metadata";
-    v.src = RAW + path;
+    v.setAttribute("preload", "metadata");
+    v.src = src;
     const link = document.createElement("a");
-    link.href = RAW + path;
-    link.textContent = "نئی ونڈو میں کھولیں";
+    link.href = src;
     link.target = "_blank";
+    link.textContent = "نئی ونڈو میں کھولیں";
     wrap.append(h, v, link);
     return wrap;
+  }
+
+  function pretty(path) {
+    const parts = path.split("/").filter(Boolean);
+    const name = parts.length > 1 ? parts[parts.length - 2] : path;
+    return name.replace(/-/g, " ");
+  }
+
+  async function exists(url) {
+    try {
+      const res = await fetch(url, { method: "HEAD" });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
   }
 
   async function load() {
     const list = document.getElementById("list");
     list.innerHTML = "";
-    const found = [];
+    let count = 0;
 
+    // 1) Site par rakhi hui taaza video (same origin — phone par bhi chalti hai)
+    for (const name of ["video.mp4", "sample.mp4"]) {
+      if (await exists(name)) {
+        list.appendChild(makeCard(name, "تازہ ویڈیو (نئی آواز)"));
+        count++;
+        break;
+      }
+    }
+
+    // 2) Baqi hisse gh-pages ki gallery se
     try {
       const res = await fetch(TREE);
       const data = await res.json();
-      for (const item of data.tree || []) {
-        if (item.type === "blob" && /^all\/[^/]+\/video\.mp4$/.test(item.path)) {
-          found.push(item.path);
-        }
+      const paths = (data.tree || [])
+        .filter(i => i.type === "blob" && /^all\/[^/]+\/video\.mp4$/.test(i.path))
+        .map(i => i.path)
+        .sort();
+      for (const path of paths) {
+        list.appendChild(makeCard(RAW + path, pretty(path)));
+        count++;
       }
-    } catch (err) {
-      /* neeche fallback */
-    }
-
-    found.sort();
-    if (found.length) {
-      found.forEach(path => list.append(card(path)));
-      return;
-    }
-
-    // Abhi gallery nahi bani — kam az kam aakhri video.
-    try {
-      const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/gh-pages`);
-      const data = await res.json();
-      if ((data.tree || []).some(item => item.path === "video.mp4")) {
-        list.append(card("video.mp4"));
-        return;
-      }
-    } catch (err) {
+    } catch (e) {
       /* ignore */
     }
 
-    const p = document.createElement("p");
-    p.className = "empty";
-    p.textContent = "ابھی کوئی ویڈیو نہیں ملی — Render all episodes چلائیے۔";
-    list.append(p);
+    if (!count) {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "ابھی کوئی ویڈیو نہیں ملی — دوبارہ کوشش کریں۔";
+      list.appendChild(p);
+    }
   }
 
   load();

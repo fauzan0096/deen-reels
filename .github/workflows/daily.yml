@@ -133,16 +133,19 @@ jobs:
       - name: Commit posting state
         if: always()
         run: |
-          if [ ! -f state.json ]; then
-            echo "state.json nahi mili, kuch commit nahi."
-            exit 0
-          fi
           git config user.name "deen-reels-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add state.json
+          # Site par seedha chalne ke liye aakhri video repo me bhi rakho.
+          if [ -f out/video.mp4 ]; then
+            cp out/video.mp4 sample.mp4
+            git add sample.mp4
+          fi
+          if [ -f state.json ]; then
+            git add state.json
+          fi
           if git diff --cached --quiet; then
-            echo "State me koi change nahi."
+            echo "Kuch commit karne ko nahi."
           else
-            git commit -m "chore: update posting state"
+            git commit -m "chore: update sample video and posting state"
             git push || echo "State push skip."
           fi
