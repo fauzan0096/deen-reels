@@ -5,6 +5,7 @@ name: Render all episodes
 # Kuch bhi YouTube/Facebook par post nahi hota.
 # Gallery har hisse ke baad update hoti hai — beech me ruk jaye to bhi jo ban
 # chuke hain wo dekh/download kiye ja sakte hain.
+# Gallery gh-pages par jati hai; site ka player wahi videos chalata hai.
 
 on:
   workflow_dispatch:
