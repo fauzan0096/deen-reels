@@ -10,6 +10,12 @@ URDU = {
     "name": "Urdu",
     "voice": "ur-PK-AsadNeural",
     "female_voice": "ur-PK-UzmaNeural",
+    # Awaaz ke liye alag shakl — warna TTS "wasra anbiya" bol deta hai.
+    "channel_spoken": "وراثة الأنبياء",
+    "next_lines": [
+        "اگلے حصے میں اس واقعے کا باقی حصہ ہے — چینل سبسکرائب کر لیں تاکہ کچھ نہ چھوٹے۔",
+        "کہانی ابھی ختم نہیں ہوئی — اگلا حصہ دیکھنے کے لیے سبسکرائب کر لیں۔",
+    ],
     "label_story": "صحابہ کرام کی سیرت",
     "label_lesson": "سبق",
     "label_source": "حوالہ",

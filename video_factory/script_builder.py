@@ -108,7 +108,11 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     citation = source_line(story)
     story_title = _honor_title(story["title"])
 
-    intro = _sentence(lang["intro_template"].format(channel=cfg.channel_name))
+    intro = _sentence(
+        lang["intro_template"].format(
+            channel=lang.get("channel_spoken") or cfg.channel_name
+        )
+    )
     outro = _sentence(_pick_outro(lang, ordinal))
 
     # Pehla screen: intro + hook saath me bola jata hai.
@@ -135,7 +139,10 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
         )
     cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=lesson))
     cards.append(Card(text=closing, spoken=closing))
-    # Aakhir me marketing line, aur uske neeche saaf hawala.
+    # Agla hissa aane wala ho to us ki targheeb, phir marketing line.
+    next_hint = _sentence(story.get("next_hint"))
+    if next_hint:
+        cards.append(Card(text=next_hint, sub=cta, spoken=next_hint))
     cards.append(Card(text=outro, sub=cta, footer=citation, spoken=outro))
 
     title = _safe_title(f"{story_title} | {cfg.channel_name} #Shorts")
