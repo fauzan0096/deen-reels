@@ -104,8 +104,6 @@ def load_config() -> Config:
         dry_run=_env_bool("DRY_RUN", False),
         ambience=_env_bool("AMBIENCE", True),
         logo=_env_bool("LOGO", False),
-        ambience=_env_bool("AMBIENCE", True),
-        logo=_env_bool("LOGO", True),
         youtube_client_id=_env("YOUTUBE_CLIENT_ID"),
         youtube_client_secret=_env("YOUTUBE_CLIENT_SECRET"),
         youtube_refresh_token=_env("YOUTUBE_REFRESH_TOKEN"),
