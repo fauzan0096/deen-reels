@@ -71,6 +71,26 @@ def _town(draw: ImageDraw.ImageDraw, x: float, y: float, colour) -> None:
     draw.ellipse([x + 111, y - 100, x + 139, y - 70], fill=colour)
 
 
+def _camel(draw: ImageDraw.ImageDraw, x: float, base_y: float, scale: float, colour) -> None:
+    """Door khara oont ka silhouette — koi chehra nahi, bas shakl."""
+    s = scale
+    leg = int(max(2, 6 * s))
+    draw.ellipse([x - 46 * s, base_y - 62 * s, x + 46 * s, base_y - 18 * s], fill=colour)
+    draw.ellipse([x - 16 * s, base_y - 82 * s, x + 16 * s, base_y - 50 * s], fill=colour)
+    draw.line(
+        [(x + 34 * s, base_y - 52 * s), (x + 58 * s, base_y - 96 * s)],
+        fill=colour,
+        width=int(max(2, 7 * s)),
+    )
+    draw.ellipse([x + 50 * s, base_y - 112 * s, x + 76 * s, base_y - 92 * s], fill=colour)
+    for dx in (-34, -12, 14, 34):
+        draw.line(
+            [(x + dx * s, base_y - 24 * s), (x + dx * s + 2 * s, base_y)],
+            fill=colour,
+            width=leg,
+        )
+
+
 def make_background(path: Path) -> Path:
     """Raat ka sehra: asmaan, sitare, hilal, tiley, khajoor aur door basti."""
     image = Image.new("RGB", (WIDTH, HEIGHT), (6, 8, 18))
@@ -78,13 +98,13 @@ def make_background(path: Path) -> Path:
 
     horizon = int(HEIGHT * 0.76)
 
-    # asmaan: gehri raat se ufq ke garam rang tak
+    # asmaan: gehri raat se ufq ke sunehri rang tak
     for y in range(horizon):
-        t = (y / max(1, horizon)) ** 0.9
+        t = (y / max(1, horizon)) ** 1.15
         colour = (
-            int(8 + (74 - 8) * t),
-            int(12 + (56 - 12) * t),
-            int(34 + (70 - 34) * t),
+            int(10 + (198 - 10) * t),
+            int(14 + (124 - 14) * t),
+            int(46 + (74 - 46) * t),
         )
         draw.line([(0, y), (WIDTH, y)], fill=colour)
 
@@ -92,11 +112,11 @@ def make_background(path: Path) -> Path:
     stars = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     pen = ImageDraw.Draw(stars)
     rng = random.Random(7)
-    for _ in range(260):
+    for _ in range(180):
         sx = rng.uniform(0, WIDTH)
-        sy = rng.uniform(0, horizon * 0.82)
+        sy = rng.uniform(0, horizon * 0.45)
         radius = rng.choice([1, 1, 1, 2, 2, 3])
-        alpha = rng.randint(70, 210)
+        alpha = rng.randint(40, 150)
         pen.ellipse([sx - radius, sy - radius, sx + radius, sy + radius], fill=(255, 250, 235, alpha))
     image = Image.alpha_composite(image.convert("RGBA"), stars)
 
@@ -110,31 +130,47 @@ def make_background(path: Path) -> Path:
     moon_only.paste((255, 236, 190, 235), (0, 0), mask)
     image = Image.alpha_composite(image, moon_only)
 
-    # tiley (teen teh)
+    # ufq par halki sunehri roshni
+    glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    glow_pen = ImageDraw.Draw(glow)
+    glow_pen.ellipse(
+        [WIDTH - 520, horizon - 190, WIDTH + 120, horizon + 120],
+        fill=(255, 205, 130, 90),
+    )
+    glow = glow.filter(ImageFilter.GaussianBlur(90))
+    image = Image.alpha_composite(image, glow)
+    draw = ImageDraw.Draw(image)
+
+    # tiley (chaar teh, door se qareeb)
     layers = [
-        (horizon + 30, 24, (44, 34, 28)),
-        (horizon + 120, 38, (30, 22, 20)),
-        (horizon + 230, 52, (18, 13, 13)),
+        (horizon + 6, 20, (128, 96, 74)),
+        (horizon + 70, 30, (96, 70, 56)),
+        (horizon + 150, 42, (66, 48, 42)),
+        (horizon + 250, 56, (40, 30, 30)),
     ]
     for index, (base_y, amp, colour) in enumerate(layers):
         points: List[Tuple[float, float]] = []
         for x in range(0, WIDTH + 20, 20):
             y = (
                 base_y
-                + amp * math.sin(x / 260 + index * 1.7)
-                + amp * 0.45 * math.sin(x / 90 + index)
+                + amp * math.sin(x / 300 + index * 1.9)
+                + amp * 0.5 * math.sin(x / 110 + index)
             )
             points.append((x, y))
         points += [(WIDTH, HEIGHT), (0, HEIGHT)]
         draw.polygon(points, fill=colour)
 
     # door basti ka silhouette (log nahi, sirf imaraat)
-    _town(draw, 250, horizon + 96, (16, 12, 14))
-    _town(draw, 620, horizon + 108, (13, 10, 12))
+    _town(draw, 210, horizon + 74, (58, 40, 34))
+    _town(draw, 640, horizon + 84, (50, 34, 30))
+
+    # us zamane ki yaad: door oonton ka qafila
+    for offset, scale in ((60, 0.9), (190, 0.78), (300, 0.7)):
+        _camel(draw, offset, horizon + 118, scale, (44, 32, 28))
 
     # khajoor ke darakht kinaron par
-    _palm(draw, 60, HEIGHT - 40, 620, (10, 8, 10))
-    _palm(draw, WIDTH - 90, HEIGHT - 10, 540, (10, 8, 10))
+    _palm(draw, 60, HEIGHT - 40, 620, (26, 18, 16))
+    _palm(draw, WIDTH - 90, HEIGHT - 10, 540, (26, 18, 16))
 
     # text ke peeche halka parda, taake likhai saaf parhi jaye
     scrim = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
