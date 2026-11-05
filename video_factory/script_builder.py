@@ -20,10 +20,12 @@ _SAHABI_MARK = "رضی اللہ"
 
 
 def _honorifics(text: str) -> str:
-    """رسول اللہ کے بعد ﷺ، اور نام کے ساتھ رضی اللہ عنہ — khud se lag jata hai."""
+    """رسول اللہ کے بعد ﷺ، اور awaaz bhi usay parh sake — is liye poora likha jata hai."""
     if not text:
         return text
-    return _PROPHET.sub(r"\1 ﷺ", text)
+    text = _PROPHET.sub(r"\1 ﷺ", text)
+    # TTS "ﷺ" nahi bolta, is liye lafzon me likh dete hain.
+    return text.replace("ﷺ", "صلی اللہ علیہ وسلم")
 
 
 def _honor_title(title: str) -> str:
