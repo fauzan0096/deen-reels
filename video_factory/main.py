@@ -22,7 +22,13 @@ from .state import load, mark_posted, save
 from .stories import load_stories, next_story
 from .tts import synthesize
 from .uploaders.base import UploadResult
-from .visuals import build_captions, card_timings, ensure_logo, make_background
+from .visuals import (
+    build_captions,
+    card_timings,
+    custom_background,
+    ensure_logo,
+    make_background,
+)
 
 STATE_PATH = ROOT / "state.json"
 STORIES_PATH = ROOT / "content" / "stories.json"
@@ -130,7 +136,12 @@ def main() -> int:
         )
 
     log("Background aur captions ban rahe hain...")
-    make_background(background_path)
+    chosen = custom_background(Path("assets"))
+    if chosen is not None:
+        background_path = chosen
+        log(f"Apna background use ho raha hai: {chosen.name}")
+    else:
+        make_background(background_path)
     timings = card_timings(script.cards, transcript.words, duration)
     build_captions(
         script.cards,

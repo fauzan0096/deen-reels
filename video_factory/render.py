@@ -14,6 +14,16 @@ class RenderError(RuntimeError):
     pass
 
 
+VIDEO_SUFFIXES = {".mp4", ".mov", ".webm", ".m4v"}
+
+
+def _background_input(background: Path) -> list:
+    """Image ho to loop karke, video ho to stream_loop se chalta hai."""
+    if Path(background).suffix.lower() in VIDEO_SUFFIXES:
+        return ["-stream_loop", "-1", "-i", str(background)]
+    return ["-loop", "1", "-framerate", "30", "-i", str(background)]
+
+
 def ensure_tools() -> None:
     missing = [name for name in ("ffmpeg", "ffprobe") if shutil.which(name) is None]
     if missing:
@@ -108,12 +118,7 @@ def render(
 
     if logo is not None and Path(logo).exists():
         command += [
-            "-loop",
-            "1",
-            "-framerate",
-            "30",
-            "-i",
-            str(background),
+            *_background_input(background),
             "-i",
             str(audio),
             "-i",
@@ -132,12 +137,7 @@ def render(
         ]
     else:
         command += [
-            "-loop",
-            "1",
-            "-framerate",
-            "30",
-            "-i",
-            str(background),
+            *_background_input(background),
             "-i",
             str(audio),
             "-vf",

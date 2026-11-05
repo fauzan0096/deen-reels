@@ -100,16 +100,14 @@ def make_background(path: Path) -> Path:
         pen.ellipse([sx - radius, sy - radius, sx + radius, sy + radius], fill=(255, 250, 235, alpha))
     image = Image.alpha_composite(image.convert("RGBA"), stars)
 
-    # hilal
-    cx, cy = 812, 300
+    # hilal (baayein taraf, taake upar right wale logo se na takraye)
+    cx, cy = 250, 330
     moon_only = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     mask = Image.new("L", (WIDTH, HEIGHT), 0)
     mask_pen = ImageDraw.Draw(mask)
-    mask_pen.ellipse([cx - 120, 230, cx + 60, 410], fill=255)
-    mask_pen.ellipse([cx - 60, 214, cx + 118, 392], fill=0)
-    moon_only.paste((255, 236, 190, 240), (0, 0), mask)
-    glow = moon_only.filter(ImageFilter.GaussianBlur(18))
-    image = Image.alpha_composite(image, glow)
+    mask_pen.ellipse([cx - 90, cy - 90, cx + 90, cy + 90], fill=255)
+    mask_pen.ellipse([cx - 30, cy - 106, cx + 148, cy + 74], fill=0)
+    moon_only.paste((255, 236, 190, 235), (0, 0), mask)
     image = Image.alpha_composite(image, moon_only)
 
     # tiley (teen teh)
@@ -161,6 +159,29 @@ def make_background(path: Path) -> Path:
 
 
 # ---------------------------------------------------------------------- logo
+
+
+BACKGROUND_NAMES = (
+    "background.mp4",
+    "background.mov",
+    "background.webm",
+    "background.jpg",
+    "background.jpeg",
+    "background.png",
+)
+
+
+def custom_background(assets_dir: Path) -> Optional[Path]:
+    """assets me rakha apna background (photo ya video), agar maujood ho.
+
+    `assets/background.mp4` ya `assets/background.jpg` rakho — bana hua
+    sehra background use nahi hoga, tumhara apna chalega.
+    """
+    for name in BACKGROUND_NAMES:
+        candidate = assets_dir / name
+        if candidate.exists() and candidate.stat().st_size > 0:
+            return candidate
+    return None
 
 
 def _square_points(cx: float, cy: float, radius: float, angle_deg: float):
