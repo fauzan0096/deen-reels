@@ -52,12 +52,15 @@ def _validate(story: dict, index: int) -> dict:
         "hook": str(story.get("hook", "")).strip(),
         "beats": [
             {
+                "label": str(beat.get("label", "")).strip(),
                 "urdu": str(beat.get("urdu", "")).strip(),
                 "arabic": str(beat.get("arabic", "")).strip(),
             }
             for beat in beats
         ],
         "lesson": str(story.get("lesson", "")).strip(),
+        # Agla hissa aane wala ho to screen par us ki targheeb.
+        "next_hint": str(story.get("next_hint", "")).strip(),
         "source": {
             "book": str(source.get("book", "")).strip(),
             "author": str(source.get("author", "")).strip(),
