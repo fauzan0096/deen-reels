@@ -11,6 +11,14 @@ on:
         type: boolean
         default: true
 
+  # Code badalne par ek sample video banao (publish nahi) — naya look dekhne ke liye.
+  push:
+    paths:
+      - "video_factory/**"
+      - "content/**"
+      - "assets/**"
+      - "requirements.txt"
+
 concurrency:
   group: daily-reel
   cancel-in-progress: false
@@ -43,8 +51,9 @@ jobs:
           CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
-          # Manual run: dry_run tick. Rozana (schedule): repo Variable DRY_RUN chalti hai.
-          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && 'yes' || vars.DRY_RUN || 'no' }}
+          # Manual run: dry_run tick chalti hai. Code push: hamesha sirf preview.
+          # Rozana (schedule): repo Variable DRY_RUN.
+          DRY_RUN: ${{ github.event_name == 'push' && 'yes' || (github.event.inputs.dry_run == 'true' && 'yes' || vars.DRY_RUN || 'no') }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}

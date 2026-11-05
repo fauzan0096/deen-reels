@@ -1,12 +1,6 @@
 name: Preflight check
 
 on:
-  # Har push par khud chalta hai (state.json ke update par nahi), taake
-  # mobile se bhi "Run workflow" dhoondhna na pade.
-  push:
-    branches: [main]
-    paths-ignore:
-      - state.json
   workflow_dispatch:
 
 permissions:

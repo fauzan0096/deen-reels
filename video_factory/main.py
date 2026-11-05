@@ -171,11 +171,14 @@ def main() -> int:
         json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
+    # DRY_RUN sirf test hai — us se story aage nahi badhti. Story tabhi
+    # "posted" mark hoti hai jab sach me upload ho jaye (ya koi platform
+    # configured hi na ho, kyunki tab manual upload ka mode hai).
     posted_any = any(result.ok for result in results)
     no_platforms = not (
         cfg.youtube_ready or cfg.facebook_ready or cfg.instagram_ready
     )
-    if cfg.dry_run or posted_any or no_platforms:
+    if posted_any or no_platforms:
         mark_posted(
             state,
             story["id"],
