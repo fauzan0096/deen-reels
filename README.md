@@ -10,7 +10,9 @@ YouTube aur Facebook par apne aap post ho jata hai.
 
 1. `content/stories.json` se agla waqiya uthata hai (jo pehle post nahi hua).
 2. Story ke `beats` — Urdu narration, har beat ke saath Arabic asal (jahan maujood ho).
-3. `edge-tts` (Microsoft ki free voice) se Urdu voiceover.
+3. `edge-tts` (Microsoft ki free voice) se Urdu voiceover — **har jumla alag**,
+   darmiyan me chhota sa sukun, aur sanjeeda beat (وفات، ایک صفت، سبق) thori
+   dheemi awaaz me (mahol banane ke liye).
 4. Har beat ka apna screen, aakhir me "سبق" aur hawala card.
 5. ffmpeg se mp4 (1080x1920, captions burned).
 6. YouTube / Facebook par upload, phir `state.json` update.
