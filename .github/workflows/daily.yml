@@ -75,6 +75,20 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: Publish video to a release (direct mp4 link)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f out/video.mp4 ]; then
+            echo "Video nahi bani, release skip."
+            exit 0
+          fi
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          gh release create latest out/video.mp4 out/metadata.json \
+            --title "Latest video" \
+            --notes "Sabse naya banaya gaya video. Seedha link: video.mp4"
+
       - name: Commit posting state
         if: always()
         run: |
