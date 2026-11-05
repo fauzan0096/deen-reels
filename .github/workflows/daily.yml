@@ -90,6 +90,28 @@ jobs:
             --title "Latest video" \
             --notes "Sabse naya banaya gaya video. Seedha link: video.mp4"
 
+      - name: Publish preview page (video plays in the browser)
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f out/video.mp4 ]; then
+            echo "Video nahi bani, player skip."
+            exit 0
+          fi
+          rm -rf preview_site
+          mkdir -p preview_site
+          cp preview/index.html preview_site/index.html
+          cp out/video.mp4 preview_site/video.mp4
+          cd preview_site
+          git init -q
+          git checkout -q -b gh-pages
+          git add .
+          git -c user.name="deen-reels-bot" \
+              -c user.email="actions@users.noreply.github.com" \
+              commit -qm "preview"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
+
       - name: Commit posting state
         if: always()
         run: |
