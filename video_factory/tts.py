@@ -7,6 +7,7 @@ ja raha ho (jaise padha ja raha ho waisa hi screen par aaye).
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Tuple
@@ -53,9 +54,19 @@ def synthesize(
                     duration = float(chunk.get("duration", 0)) / _TICKS_PER_SECOND
                     words.append((offset, offset + duration))
 
-    asyncio.run(_run())
+    # edge-tts kabhi kabhi beech me fail ho jata hai (rate limit) — 3 koshish.
+    error: Exception | None = None
+    for attempt in range(1, 4):
+        words.clear()
+        try:
+            asyncio.run(_run())
+        except Exception as exc:  # noqa: BLE001
+            error = exc
+        if out_path.exists() and out_path.stat().st_size > 0:
+            break
+        time.sleep(4 * attempt)
 
     if not out_path.exists() or out_path.stat().st_size == 0:
-        raise RuntimeError("Voiceover file ban nahi payi (edge-tts se koi audio nahi mila)")
+        raise RuntimeError(f"Voiceover ban nahi payi: {error}")
 
     return Transcript(path=out_path, words=words)

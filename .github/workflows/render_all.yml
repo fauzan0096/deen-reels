@@ -3,6 +3,8 @@ name: Render all episodes
 # Sab videos ek saath banao (Abu Bakr + Umar, jitne bhi stories.json me hain),
 # gallery page banao, aur har hissa alag download link ke saath release me daal do.
 # Kuch bhi YouTube/Facebook par post nahi hota.
+# Gallery har hisse ke baad update hoti hai — beech me ruk jaye to bhi jo ban
+# chuke hain wo dekh/download kiye ja sakte hain.
 
 on:
   workflow_dispatch:

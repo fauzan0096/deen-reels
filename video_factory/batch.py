@@ -17,6 +17,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import time
 import traceback
 from pathlib import Path
 
@@ -252,9 +253,26 @@ def main() -> int:
         )
         items.append(item)
 
-    build_episode_pages(items, out_root)
-    gallery = build_gallery(items, out_root / "index.html")
-    downloads = build_downloads(items, out_root / "download.html")
+        # Har hisse ke baad gallery update — beech me ruk bhi jaye to jo ban
+        # chuke hain wo mil jayein.
+        build_episode_pages(items, out_root)
+        build_gallery(items, out_root / "index.html")
+        build_downloads(items, out_root / "download.html")
+
+        # Bhaari temp files hata do, warna disk bhar jata hai.
+        for name in (
+            "voice.mp3",
+            "voice_mixed.m4a",
+            "background.png",
+            "background_motion.mp4",
+            "captions.ass",
+        ):
+            (folder / name).unlink(missing_ok=True)
+
+        time.sleep(2)
+
+    gallery = out_root / "index.html"
+    downloads = out_root / "download.html"
     log(f"Gallery: {gallery}")
     log(f"Download: {downloads}")
     log(f"Ban gaye: {len(items)}/{total}")
