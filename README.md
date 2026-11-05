@@ -197,6 +197,15 @@ Bana hua sehra background nahi chahiye to apni tasveerein daal do:
 - Tasveer vertical (1080x1920) ho to sabse acha; warna beech se crop hogi.
 - Tasveerein apni hon ya free license wali — kisi aur ki video se frame utha kar na lagao.
 
+## Saare hisse ek saath dekhna
+
+1. GitHub → **Actions** → **Render all episodes** → **Run workflow**.
+2. Chalees minute ke andar taiyar (14 videos). Phir browser me:
+   `https://<github-user>.github.io/deen-reels/all/`
+   — yahan sab videos ek hi page par chalti hain, ek ke baad ek.
+3. Ye run **kuch post nahi karta** aur `state.json` bhi nahi badalta;
+   video files Actions ke **artifact `all-reels`** me bhi milti hain.
+
 ## Imaan-dari ke notes
 
 - Har story ka Arabic text tool (Shamela) se liya gaya hai, haath se nahi likha.

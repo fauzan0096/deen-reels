@@ -1,0 +1,81 @@
+name: Render all episodes
+
+# Sab videos ek saath banao (Abu Bakr + Umar, jitne bhi stories.json me hain),
+# aur ek gallery page par daal do — sab browser me dekh sakte hain.
+# Kuch bhi YouTube/Facebook par post nahi hota.
+
+on:
+  workflow_dispatch:
+  # Ye file badalne par ek dafa khud chal jata hai.
+  push:
+    paths:
+      - ".github/workflows/render_all.yml"
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Render every story
+        env:
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
+          VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          DRY_RUN: "yes"
+        run: python -m video_factory.batch
+
+      - name: Upload all videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-reels
+          path: out/all
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish the gallery to GitHub Pages
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f out/all/index.html ]; then
+            echo "Koi video nahi bani — publish skip."
+            exit 0
+          fi
+          rm -rf site
+          if ! git clone --depth 1 --branch gh-pages \
+              "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site 2>/dev/null; then
+            rm -rf site
+            mkdir site
+            git -C site init -q
+            git -C site checkout -q -b gh-pages
+            git -C site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          rm -rf site/all
+          cp -r out/all site/all
+          git -C site add -A
+          git -C site -c user.name="deen-reels-bot" \
+              -c user.email="actions@users.noreply.github.com" \
+              commit -qm "all episodes"
+          git -C site push -q origin HEAD:gh-pages

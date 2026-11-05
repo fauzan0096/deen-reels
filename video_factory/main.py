@@ -95,32 +95,18 @@ def publish(cfg: Config, video_path: Path, script: Script) -> list:
     return results
 
 
-def main() -> int:
-    os.chdir(ROOT)
-    cfg = load_config()
-    lang = get_lang(cfg.lang)
+def render_story(
+    cfg: Config, lang: dict, story: dict, ordinal: int, out_dir: Path
+) -> dict:
+    """Ek story ka video: TTS → ambience → background → captions → render.
 
-    state = load(STATE_PATH)
-    stories = load_stories(STORIES_PATH)
-
-    story, ordinal = next_story(stories, state)
-    if story is None:
-        log(
-            "Saari stories post ho chuki hain. content/stories.json me nayi "
-            "story jodiye (hawale ke saath)."
-        )
-        return 1
-
-    log(f"Aaj ka waqiya: {story['title']} — story #{ordinal + 1}")
-    log(f"Hawala: {source_line(story)}")
-
-    ensure_tools()
-
+    Post ya state ka koi kaam nahi — `main` (rozana) aur `batch` (sab ek saath)
+    dono isi ko use karte hain.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
     voice = cfg.voice or lang["voice"]
     script = build_script(story, lang, cfg, ordinal)
 
-    out_dir = cfg.out_dir
-    out_dir.mkdir(parents=True, exist_ok=True)
     audio_path = out_dir / "voice.mp3"
     background_path = out_dir / "background.png"
     captions_path = out_dir / "captions.ass"
@@ -181,6 +167,42 @@ def main() -> int:
     )
     size_mb = video_path.stat().st_size / (1024 * 1024)
     log(f"Video taiyar: {video_path} ({size_mb:.1f} MB)")
+
+    return {
+        "video": video_path,
+        "script": script,
+        "duration": duration,
+        "voice": voice,
+    }
+
+
+def main() -> int:
+    os.chdir(ROOT)
+    cfg = load_config()
+    lang = get_lang(cfg.lang)
+
+    state = load(STATE_PATH)
+    stories = load_stories(STORIES_PATH)
+
+    story, ordinal = next_story(stories, state)
+    if story is None:
+        log(
+            "Saari stories post ho chuki hain. content/stories.json me nayi "
+            "story jodiye (hawale ke saath)."
+        )
+        return 1
+
+    log(f"Aaj ka waqiya: {story['title']} — story #{ordinal + 1}")
+    log(f"Hawala: {source_line(story)}")
+
+    ensure_tools()
+
+    out_dir = cfg.out_dir
+    info = render_story(cfg, lang, story, ordinal, out_dir)
+    video_path = info["video"]
+    script = info["script"]
+    duration = info["duration"]
+    voice = info["voice"]
 
     results = publish(cfg, video_path, script)
 
