@@ -1,11 +1,33 @@
-"""edge-tts se free voiceover (koi API key nahi chahiye)."""
+"""edge-tts se free voiceover, saath me har lafz ka waqt bhi.
+
+Word timings isliye chahiye taake caption usi waqt badle jab wo lafz bola
+ja raha ho (jaise padha ja raha ho waisa hi screen par aaye).
+"""
 
 from __future__ import annotations
 
+import asyncio
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import List, Tuple
+
+# edge-tts waqt 100-nanosecond ticks me deta hai.
+_TICKS_PER_SECOND = 10_000_000
 
 
-def synthesize(text: str, voice: str, out_path: Path, rate: str = "+0%") -> Path:
+@dataclass
+class Transcript:
+    path: Path
+    words: List[Tuple[float, float]] = field(default_factory=list)
+
+    @property
+    def has_timing(self) -> bool:
+        return len(self.words) > 0
+
+
+def synthesize(
+    text: str, voice: str, out_path: Path, rate: str = "+0%"
+) -> Transcript:
     if not (text or "").strip():
         raise ValueError("TTS ke liye text khali hai")
 
@@ -17,15 +39,23 @@ def synthesize(text: str, voice: str, out_path: Path, rate: str = "+0%") -> Path
         ) from exc
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    words: List[Tuple[float, float]] = []
 
     async def _run() -> None:
         communicate = edge_tts.Communicate(text, voice, rate=rate)
-        await communicate.save(str(out_path))
-
-    import asyncio
+        with open(out_path, "wb") as handle:
+            async for chunk in communicate.stream():
+                kind = chunk.get("type")
+                if kind == "audio":
+                    handle.write(chunk["data"])
+                elif kind in ("WordBoundary", "SentenceBoundary"):
+                    offset = float(chunk.get("offset", 0)) / _TICKS_PER_SECOND
+                    duration = float(chunk.get("duration", 0)) / _TICKS_PER_SECOND
+                    words.append((offset, offset + duration))
 
     asyncio.run(_run())
 
     if not out_path.exists() or out_path.stat().st_size == 0:
         raise RuntimeError("Voiceover file ban nahi payi (edge-tts se koi audio nahi mila)")
-    return out_path
+
+    return Transcript(path=out_path, words=words)
