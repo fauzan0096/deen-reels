@@ -6,6 +6,7 @@ hawala hota hai). Ye module sirf usko video ke liye tarteeb deta hai.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -13,6 +14,22 @@ from .config import Config
 
 SENTENCE_END = "۔"
 _ENDINGS = "۔.!?؟:؛"
+
+_PROPHET = re.compile(r"(رسول اللہ|نبی اللہ)(?![^۔]{0,3}ﷺ)")
+_SAHABI_MARK = "رضی اللہ"
+
+
+def _honorifics(text: str) -> str:
+    """رسول اللہ کے بعد ﷺ، اور نام کے ساتھ رضی اللہ عنہ — khud se lag jata hai."""
+    if not text:
+        return text
+    return _PROPHET.sub(r"\1 ﷺ", text)
+
+
+def _honor_title(title: str) -> str:
+    if _SAHABI_MARK in title:
+        return title
+    return f"{title} رضی اللہ عنہ" if title else title
 
 
 @dataclass
@@ -81,12 +98,13 @@ def _pick_outro(lang: dict, ordinal: int) -> str:
 
 
 def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
-    hook = _sentence(story.get("hook") or story.get("subtitle"))
-    beats = [_sentence(beat.get("urdu")) for beat in story.get("beats", [])]
-    lesson = _sentence(story.get("lesson"))
+    hook = _sentence(_honorifics(story.get("hook") or story.get("subtitle")))
+    beats = [_sentence(_honorifics(beat.get("urdu"))) for beat in story.get("beats", [])]
+    lesson = _sentence(_honorifics(story.get("lesson")))
     closing = _sentence(lang["closing"])
     cta = _sentence(lang["cta"])
     citation = source_line(story)
+    story_title = _honor_title(story["title"])
 
     intro = _sentence(lang["intro_template"].format(channel=cfg.channel_name))
     outro = _sentence(_pick_outro(lang, ordinal))
@@ -98,10 +116,10 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
 
     cards: List[Card] = [
         Card(
-            text=story["title"],
+            text=story_title,
             sub=hook,
             label=lang["label_story"],
-            spoken=opening or story["title"],
+            spoken=opening or story_title,
         )
     ]
     for beat in story.get("beats", []):
@@ -118,9 +136,9 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     # Aakhir me marketing line, aur uske neeche saaf hawala.
     cards.append(Card(text=outro, sub=cta, footer=citation, spoken=outro))
 
-    title = _safe_title(f"{story['title']} | {cfg.channel_name} #Shorts")
+    title = _safe_title(f"{story_title} | {cfg.channel_name} #Shorts")
     if len(title) > 100:
-        title = _safe_title(f"{story['title']} #Shorts")[:100]
+        title = _safe_title(f"{story_title} #Shorts")[:100]
 
     description = "\n".join(
         [
