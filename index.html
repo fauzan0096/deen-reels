@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ویڈیوز — ورثة الانبياء</title>
+<style>
+  body { margin: 0; background: #0b1220; color: #e8d9a6;
+    font-family: -apple-system, "Noto Naskh Arabic", sans-serif; }
+  header { padding: 26px 16px 6px; text-align: center; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  p { margin: 0; font-size: 13px; opacity: .75; text-align: center; }
+  main { max-width: 460px; margin: 0 auto; padding: 16px 14px 48px; }
+  .card { background: #111c31; border-radius: 16px; padding: 12px;
+    margin-bottom: 22px; }
+  h2 { font-size: 15px; margin: 0 0 8px; }
+  video { width: 100%; border-radius: 12px; background: #000; }
+  a { color: #e8d9a6; font-size: 13px; }
+  .empty { padding: 30px 10px; font-size: 14px; opacity: .8; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ویڈیوز</h1>
+  <p>ورثة الانبياء — بغیر ڈاؤن لوڈ، یہیں چلا کر دیکھیں</p>
+</header>
+<main id="list">
+  <p class="empty">لوڈ ہو رہی ہیں…</p>
+</main>
+<script>
+  const API = "https://api.github.com/repos/fauzan0096/deen-reels/releases";
+  const tags = ["latest", "parts"];
+
+  function titleFor(name) {
+    return name.replace(/\.mp4$/i, "").replace(/-/g, " ");
+  }
+
+  function card(asset) {
+    const wrap = document.createElement("section");
+    wrap.className = "card";
+    const h = document.createElement("h2");
+    h.textContent = asset.name.replace(/\.mp4$/i, "");
+    const v = document.createElement("video");
+    v.controls = true;
+    v.playsInline = true;
+    v.preload = "metadata";
+    v.src = asset.browser_download_url;
+    const link = document.createElement("a");
+    link.href = asset.browser_download_url;
+    link.setAttribute("download", asset.name);
+    link.textContent = "ڈاؤن لوڈ";
+    wrap.append(h, v, link);
+    return wrap;
+  }
+
+  async function load() {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+    const seen = new Set();
+    let found = 0;
+
+    for (const tag of tags) {
+      try {
+        const res = await fetch(`${API}/tags/${tag}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        const assets = (data.assets || [])
+          .filter(a => /\.mp4$/i.test(a.name))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        for (const asset of assets) {
+          if (seen.has(asset.name)) continue;
+          seen.add(asset.name);
+          list.append(card(asset));
+          found++;
+        }
+      } catch (err) {
+        /* agla tag try karein */
+      }
+    }
+
+    if (!found) {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "ابھی کوئی ویڈیو ریلیز میں نہیں ملی۔";
+      list.append(p);
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
