@@ -24,6 +24,94 @@ def _background_input(background: Path) -> list:
     return ["-loop", "1", "-framerate", "30", "-i", str(background)]
 
 
+def build_slideshow(images, duration: float, output: Path) -> Path:
+    """Kai tasveerein → halki zoom/pan ke saath ek background video."""
+    ensure_tools()
+    pictures = [Path(item) for item in images if Path(item).exists()]
+    if not pictures:
+        raise RenderError("Slideshow ke liye koi tasveer nahi mili")
+
+    per = max(2.0, float(duration) / len(pictures))
+    work = output.parent / "slides"
+    work.mkdir(parents=True, exist_ok=True)
+
+    clips = []
+    for index, picture in enumerate(pictures):
+        clip = work / f"clip{index:02d}.mp4"
+        if index % 2 == 0:
+            zoom = "'min(1.0+0.0009*on,1.18)'"
+        else:
+            zoom = "'max(1.18-0.0009*on,1.0)'"
+        command = [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-loop",
+            "1",
+            "-framerate",
+            "30",
+            "-t",
+            f"{per:.2f}",
+            "-i",
+            str(picture),
+            "-vf",
+            (
+                f"scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,"
+                f"crop={WIDTH}:{HEIGHT},"
+                f"zoompan=z={zoom}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                f":d=1:s={WIDTH}x{HEIGHT}:fps=30,format=yuv420p"
+            ),
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "22",
+            "-an",
+            str(clip),
+        ]
+        completed = subprocess.run(command, capture_output=True, text=True)
+        if completed.returncode != 0 or not clip.exists():
+            raise RenderError(
+                f"Slideshow clip fail ({picture.name}):\n"
+                + (completed.stderr or "")[-800:]
+            )
+        clips.append(clip)
+
+    listing = work / "list.txt"
+    listing.write_text(
+        "".join(f"file '{clip.name}'\n" for clip in clips), encoding="utf-8"
+    )
+    completed = subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(listing),
+            "-c",
+            "copy",
+            str(output),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(work),
+    )
+    if completed.returncode != 0 or not output.exists():
+        raise RenderError(
+            "Slideshow jodne me dikkat:\n" + (completed.stderr or "")[-800:]
+        )
+    return output
+
+
 def ensure_tools() -> None:
     missing = [name for name in ("ffmpeg", "ffprobe") if shutil.which(name) is None]
     if missing:

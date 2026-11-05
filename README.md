@@ -187,6 +187,16 @@ scripts/
   preflight.py       setup ka check
 ```
 
+## Apne background (tasveerein ya video)
+
+Bana hua sehra background nahi chahiye to apni tasveerein daal do:
+
+- `assets/backgrounds/` folder banao aur wahan `1.jpg`, `2.jpg`, `3.jpg`... rakho
+  → pipeline unki **slideshow** banayegi, har tasveer par halka zoom/pan (motion).
+- Ya ek hi file: `assets/background.jpg` (photo) / `assets/background.mp4` (video loop).
+- Tasveer vertical (1080x1920) ho to sabse acha; warna beech se crop hogi.
+- Tasveerein apni hon ya free license wali — kisi aur ki video se frame utha kar na lagao.
+
 ## Imaan-dari ke notes
 
 - Har story ka Arabic text tool (Shamela) se liya gaya hai, haath se nahi likha.

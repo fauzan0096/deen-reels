@@ -16,16 +16,23 @@ from pathlib import Path
 
 from .config import ROOT, Config, load_config
 from .i18n import get_lang
-from .render import ensure_tools, media_duration, mix_ambience, render
+from .render import (
+    build_slideshow,
+    ensure_tools,
+    media_duration,
+    mix_ambience,
+    render,
+)
 from .script_builder import Script, build_script, source_line
 from .state import load, mark_posted, save
 from .stories import load_stories, next_story
 from .tts import synthesize
 from .uploaders.base import UploadResult
 from .visuals import (
+    IMAGE_SUFFIXES,
     build_captions,
     card_timings,
-    custom_background,
+    custom_backgrounds,
     ensure_logo,
     make_background,
 )
@@ -136,10 +143,17 @@ def main() -> int:
         )
 
     log("Background aur captions ban rahe hain...")
-    chosen = custom_background(Path("assets"))
-    if chosen is not None:
-        background_path = chosen
-        log(f"Apna background use ho raha hai: {chosen.name}")
+    pictures = custom_backgrounds(Path("assets"))
+    if len(pictures) > 1 and all(
+        item.suffix.lower() in IMAGE_SUFFIXES for item in pictures
+    ):
+        log(f"{len(pictures)} tasveerein mili — slideshow (zoom/pan) ban raha hai...")
+        background_path = build_slideshow(
+            pictures, duration, out_dir / "background_motion.mp4"
+        )
+    elif pictures:
+        background_path = pictures[0]
+        log(f"Apna background use ho raha hai: {pictures[0].name}")
     else:
         make_background(background_path)
     timings = card_timings(script.cards, transcript.words, duration)

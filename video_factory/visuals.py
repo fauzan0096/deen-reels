@@ -220,6 +220,32 @@ def custom_background(assets_dir: Path) -> Optional[Path]:
     return None
 
 
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+MOTION_SUFFIXES = IMAGE_SUFFIXES | {".mp4", ".mov", ".webm", ".m4v"}
+
+
+def custom_backgrounds(assets_dir: Path) -> List[Path]:
+    """`assets/backgrounds/` folder ki saari tasveerein (ya videos), tarteeb se.
+
+    Kai tasveerein hon to unki slideshow banti hai; ek ho to wahi lagti hai.
+    """
+    folder = assets_dir / "backgrounds"
+    found: List[Path] = []
+    if folder.is_dir():
+        found = [
+            item
+            for item in sorted(folder.iterdir())
+            if item.is_file()
+            and item.suffix.lower() in MOTION_SUFFIXES
+            and item.stat().st_size > 0
+        ]
+    if found:
+        return found
+
+    single = custom_background(assets_dir)
+    return [single] if single is not None else []
+
+
 def _square_points(cx: float, cy: float, radius: float, angle_deg: float):
     points = []
     for index in range(4):
