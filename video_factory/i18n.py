@@ -11,7 +11,7 @@ URDU = {
     "voice": "ur-PK-AsadNeural",
     "female_voice": "ur-PK-UzmaNeural",
     # Awaaz ke liye alag shakl — warna TTS "wasra anbiya" bol deta hai.
-    "channel_spoken": "وَرَثَةُ الْأَنْبِيَاءِ",
+    "channel_spoken": "وَرَثَةُ الْاَنْبِیَاء",
     "next_lines": [
         "اگلے حصے میں اس واقعے کا باقی حصہ ہے — چینل سبسکرائب کر لیں تاکہ کچھ نہ چھوٹے۔",
         "کہانی ابھی ختم نہیں ہوئی — اگلا حصہ دیکھنے کے لیے سبسکرائب کر لیں۔",
