@@ -34,7 +34,7 @@ hota hai — video me hamesha nazar aata hai, aur agle hisse ki targheeb
 Har hisse ka matn **Shamela se parh kar** likha gaya hai; jo pada nahi gaya wo
 likha nahi gaya. Agla silsila: Umar bin Khattab رضی اللہ عنہ (5 hisse).
 
-## Umar bin Khattab رضی اللہ عنہ — 5 hisse (tarteeb)
+## Umar bin Khattab رضی اللہ عنہ — 6 hisse (tarteeb)
 
 | # | Hissa | Asal matn | Hawala |
 |---|---|---|---|
@@ -42,7 +42,8 @@ likha nahi gaya. Agla silsila: Umar bin Khattab رضی اللہ عنہ (5 hisse)
 | 2 | اسلام — دعا کا نتیجہ | «أسلم عمر بن الخطاب بعد أربعين رجلا وإحدى عشرة امرأة» | الاستيعاب — ج 3 ص 1145، 1147، 1149 |
 | 3 | امیر المؤمنین کا لقب | «أنت أميرنا ونحن المؤمنون، فأنت أمير المؤمنين» | الاستيعاب — ج 3 ص 1145، 1150، 1151 |
 | 4 | حق عمر کی زبان پر | «لو كان بعدي نبي لكان عمر» | الاستيعاب — ج 3 ص 1147، 1149 |
-| 5 | شہادت | «الحمد لله الذي لم يجعل قتلي بيد رجل يحاجني بلا إله إلا الله» | الاستيعاب — ج 3 ص 1152، 1155، 1157 |
+| 5 | طاقت اور ہیبت | «من أراد أن تثكله أمه ... فليلقني وراء هذا الوادي» | أسد الغابة — ج 4 ص 144، 145 |
+| 6 | شہادت | «الحمد لله الذي لم يجعل قتلي بيد رجل يحاجني بلا إله إلا الله» | الاستيعاب — ج 3 ص 1152، 1155، 1157 |
 
 ## Uske baad (isi tarteeb se)
 
