@@ -2,6 +2,8 @@
 
 Chalaiye:
     python -m video_factory.main
+
+Har run ka video GitHub par artifact aur "latest" release dono me jata hai.
 """
 
 from __future__ import annotations

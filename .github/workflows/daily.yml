@@ -17,6 +17,7 @@ on:
       - "video_factory/**"
       - "content/**"
       - "assets/**"
+      - ".github/**"
       - "requirements.txt"
 
 concurrency:
