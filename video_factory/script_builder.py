@@ -53,13 +53,37 @@ def _sentence(text: Optional[str]) -> str:
     return text
 
 
+_ARABIC_TO_ENGLISH_DIGITS = str.maketrans(
+    "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"
+)
+
+_BOOKS_ENGLISH = {
+    "صحيح البخاري": "Sahih al-Bukhari",
+    "صحيح مسلم": "Sahih Muslim",
+}
+
+
 def source_line(story: dict) -> str:
+    """Hawala English me: kitab ka naam + hadees number + jild/safha."""
     source = story.get("source") or {}
-    book = source.get("book", "")
-    ref = source.get("ref", "")
-    if book and ref:
-        return f"{book} — {ref}"
-    return book or ref
+    book_raw = str(source.get("book", "")).strip()
+    title = source.get("en") or _BOOKS_ENGLISH.get(
+        book_raw.strip("«» "), book_raw.strip("«» ")
+    )
+
+    ref = str(source.get("ref", "")).translate(_ARABIC_TO_ENGLISH_DIGITS)
+    for urdu, english in (
+        ("حدیث", "Hadith"),
+        ("حديث", "Hadith"),
+        ("،", ","),
+        ("ج ", "Vol "),
+        ("ص ", "p. "),
+    ):
+        ref = ref.replace(urdu, english)
+
+    if title and ref:
+        return f"{title} — {ref}"
+    return title or ref
 
 
 def _safe_title(text: str) -> str:
