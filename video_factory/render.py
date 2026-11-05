@@ -1,4 +1,4 @@
-"""ffmpeg se background + voiceover + captions ko mp4 me jodta hai."""
+"""ffmpeg: background + logo + voiceover + halki ambience + captions → mp4."""
 
 from __future__ import annotations
 
@@ -46,6 +46,45 @@ def media_duration(path: Path) -> float:
         raise RenderError(f"Audio duration padhi nahi gayi: {completed.stdout!r}") from exc
 
 
+def mix_ambience(voice: Path, output: Path, duration: float) -> Path:
+    """Voice ke neeche halki si hawa jaisi awaaz milata hai.
+
+    Kuch bhi galat ho jaye to bas voice file hi wapas kar deta hai — video
+    phir bhi ban jayegi.
+    """
+    command = [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-i",
+        str(voice),
+        "-f",
+        "lavfi",
+        "-i",
+        "anoisesrc=color=pink:amplitude=0.4",
+        "-filter_complex",
+        "[1:a]lowpass=f=500,tremolo=f=0.12:d=0.45,volume=0.05[amb];"
+        "[0:a][amb]amix=inputs=2:duration=first:dropout_transition=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        f"{max(1.0, duration):.2f}",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "-ar",
+        "44100",
+        str(output),
+    ]
+    completed = subprocess.run(command, capture_output=True, text=True)
+    if completed.returncode != 0 or not output.exists() or output.stat().st_size < 1000:
+        return voice
+    return output
+
+
 def render(
     background: Path,
     audio: Path,
@@ -53,34 +92,59 @@ def render(
     output: Path,
     fonts_dir: Path,
     duration: Optional[float] = None,
+    logo: Optional[Path] = None,
 ) -> Path:
     ensure_tools()
     if duration is None:
         duration = media_duration(audio)
 
-    filter_chain = (
+    scale_crop = (
         f"scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,"
-        f"crop={WIDTH}:{HEIGHT},"
-        f"format=yuv420p,"
-        f"ass={captions}:fontsdir={fonts_dir}"
+        f"crop={WIDTH}:{HEIGHT}"
     )
+    subtitles = f"ass={captions}:fontsdir={fonts_dir}"
 
-    command = [
-        "ffmpeg",
-        "-hide_banner",
-        "-loglevel",
-        "warning",
-        "-y",
-        "-loop",
-        "1",
-        "-framerate",
-        "30",
-        "-i",
-        str(background),
-        "-i",
-        str(audio),
-        "-vf",
-        filter_chain,
+    command = ["ffmpeg", "-hide_banner", "-loglevel", "warning", "-y"]
+
+    if logo is not None and Path(logo).exists():
+        command += [
+            "-loop",
+            "1",
+            "-framerate",
+            "30",
+            "-i",
+            str(background),
+            "-i",
+            str(audio),
+            "-i",
+            str(logo),
+            "-filter_complex",
+            (
+                f"[0:v]{scale_crop},format=yuv420p[bg];"
+                "[2:v]scale=250:-1[lg];"
+                "[bg][lg]overlay=x=W-w-55:y=70[ov];"
+                f"[ov]{subtitles},format=yuv420p[v]"
+            ),
+            "-map",
+            "[v]",
+            "-map",
+            "1:a",
+        ]
+    else:
+        command += [
+            "-loop",
+            "1",
+            "-framerate",
+            "30",
+            "-i",
+            str(background),
+            "-i",
+            str(audio),
+            "-vf",
+            f"{scale_crop},format=yuv420p,{subtitles}",
+        ]
+
+    command += [
         "-c:v",
         "libx264",
         "-preset",

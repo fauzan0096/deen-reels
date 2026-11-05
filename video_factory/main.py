@@ -13,13 +13,13 @@ from pathlib import Path
 
 from .config import ROOT, Config, load_config
 from .i18n import get_lang
-from .render import ensure_tools, media_duration, render
+from .render import ensure_tools, media_duration, mix_ambience, render
 from .script_builder import Script, build_script, source_line
 from .state import load, mark_posted, save
 from .stories import load_stories, next_story
 from .tts import synthesize
 from .uploaders.base import UploadResult
-from .visuals import build_captions, make_background
+from .visuals import build_captions, card_timings, ensure_logo, make_background
 
 STATE_PATH = ROOT / "state.json"
 STORIES_PATH = ROOT / "content" / "stories.json"
@@ -111,21 +111,34 @@ def main() -> int:
     video_path = out_dir / "video.mp4"
 
     log(f"Voiceover ban raha hai ({voice})...")
-    synthesize(script.narration, voice, audio_path, cfg.tts_rate)
+    transcript = synthesize(
+        script.narration, voice, out_dir / "voice.mp3", cfg.tts_rate
+    )
+    audio_path = transcript.path
     duration = media_duration(audio_path)
     log(f"Audio duration: {duration:.1f}s")
     if duration > 180:
         log("Dhyan: video 3 minute se lambi hai — story ko chhota kijiye.")
 
+    if cfg.ambience and transcript.path:
+        log("Halki background awaaz milayi ja rahi hai...")
+        audio_path = mix_ambience(
+            transcript.path, out_dir / "voice_mixed.m4a", duration
+        )
+
     log("Background aur captions ban rahe hain...")
     make_background(background_path)
+    timings = card_timings(script.cards, transcript.words, duration)
     build_captions(
         script.cards,
         duration,
         captions_path,
         header_text=cfg.channel_name,
         title=script.title,
+        timings=timings,
+        words=transcript.words,
     )
+    logo_path = ensure_logo(Path("assets") / "logo.png") if cfg.logo else None
 
     log("Video render ho raha hai...")
     render(
@@ -135,6 +148,7 @@ def main() -> int:
         output=video_path,
         fonts_dir=Path("assets") / "fonts",
         duration=duration,
+        logo=logo_path,
     )
     size_mb = video_path.stat().st_size / (1024 * 1024)
     log(f"Video taiyar: {video_path} ({size_mb:.1f} MB)")

@@ -48,6 +48,8 @@ class Config:
     tts_rate: str = "+0%"
     privacy: str = "public"
     dry_run: bool = False
+    ambience: bool = True
+    logo: bool = True
 
     youtube_client_id: str = ""
     youtube_client_secret: str = ""
@@ -94,12 +96,14 @@ class Config:
 
 def load_config() -> Config:
     return Config(
-        channel_name=_env("CHANNEL_NAME", "Deen Reels"),
+        channel_name=_env("CHANNEL_NAME", "ورثة الانبياء"),
         lang=_env("VIDEO_LANG", "ur").lower(),
         voice=_env("VOICE", ""),
         tts_rate=_env("TTS_RATE", "+0%"),
         privacy=_env("PRIVACY", "public").lower(),
         dry_run=_env_bool("DRY_RUN", False),
+        ambience=_env_bool("AMBIENCE", True),
+        logo=_env_bool("LOGO", True),
         youtube_client_id=_env("YOUTUBE_CLIENT_ID"),
         youtube_client_secret=_env("YOUTUBE_CLIENT_SECRET"),
         youtube_refresh_token=_env("YOUTUBE_REFRESH_TOKEN"),

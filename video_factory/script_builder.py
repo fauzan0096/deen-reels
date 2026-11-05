@@ -66,6 +66,13 @@ def _safe_title(text: str) -> str:
     return text.replace("<", "").replace(">", "").strip()
 
 
+def _pick_outro(lang: dict, ordinal: int) -> str:
+    lines = lang.get("outro_lines") or []
+    if not lines:
+        return lang.get("cta", "")
+    return lines[ordinal % len(lines)]
+
+
 def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     hook = _sentence(story.get("hook") or story.get("subtitle"))
     beats = [_sentence(beat.get("urdu")) for beat in story.get("beats", [])]
@@ -74,7 +81,12 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     cta = _sentence(lang["cta"])
     citation = source_line(story)
 
-    spoken_parts = [hook] + beats + [lesson, closing]
+    intro = _sentence(lang["intro_template"].format(channel=cfg.channel_name))
+    outro = _sentence(_pick_outro(lang, ordinal))
+
+    # Pehla screen: intro + hook saath me bola jata hai.
+    opening = " ".join(part for part in (intro, hook) if part)
+    spoken_parts = [opening] + beats + [lesson, closing, outro]
     narration = " ".join(part for part in spoken_parts if part)
 
     cards: List[Card] = [
@@ -82,7 +94,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             text=story["title"],
             sub=hook,
             label=lang["label_story"],
-            spoken=hook or story["title"],
+            spoken=opening or story["title"],
         )
     ]
     for beat in story.get("beats", []):
@@ -94,9 +106,9 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             )
         )
     cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=lesson))
-    cards.append(
-        Card(text=closing, sub=cta, label="", footer=citation, spoken=closing)
-    )
+    cards.append(Card(text=closing, footer=citation, spoken=closing))
+    # Aakhir me marketing line.
+    cards.append(Card(text=outro, sub=cta, spoken=outro))
 
     title = _safe_title(f"{story['title']} | {cfg.channel_name} #Shorts")
     if len(title) > 100:
@@ -113,6 +125,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             f"({lang['label_source']}: {citation})",
             "",
             lang["daily_line"],
+            outro,
             cta,
             "",
             " ".join(lang["hashtags"]),
