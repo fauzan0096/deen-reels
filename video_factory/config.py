@@ -49,7 +49,7 @@ class Config:
     privacy: str = "public"
     dry_run: bool = False
     ambience: bool = True
-    logo: bool = True
+    logo: bool = False
 
     youtube_client_id: str = ""
     youtube_client_secret: str = ""
@@ -102,6 +102,8 @@ def load_config() -> Config:
         tts_rate=_env("TTS_RATE", "+0%"),
         privacy=_env("PRIVACY", "public").lower(),
         dry_run=_env_bool("DRY_RUN", False),
+        ambience=_env_bool("AMBIENCE", True),
+        logo=_env_bool("LOGO", False),
         ambience=_env_bool("AMBIENCE", True),
         logo=_env_bool("LOGO", True),
         youtube_client_id=_env("YOUTUBE_CLIENT_ID"),
