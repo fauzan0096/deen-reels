@@ -1,0 +1,148 @@
+name: Daily Deen Reel
+
+on:
+  schedule:
+    # Roz 08:00 IST (02:30 UTC). Ghadi set karni ho to yahan cron badaiye.
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Sirf video banao, publish mat karo"
+        type: boolean
+        default: true
+
+  # Code badalne par ek sample video banao (publish nahi) — naya look dekhne ke liye.
+  push:
+    paths:
+      - "video_factory/**"
+      - "content/**"
+      - "assets/**"
+      - ".github/**"
+      - "requirements.txt"
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build and publish
+        env:
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
+          VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          PRIVACY: ${{ vars.PRIVACY || 'public' }}
+          # Manual run: dry_run tick chalti hai. Code push: hamesha sirf preview.
+          # Rozana (schedule): repo Variable DRY_RUN — jab tak "yes" hai, kuch
+          # post nahi hota (sirf video banti hai). Approve hone par "no".
+          DRY_RUN: ${{ github.event_name == 'push' && 'yes' || (github.event.inputs.dry_run == 'true' && 'yes' || vars.DRY_RUN || 'no') }}
+          # Roz kitni videos (1 ya 2). Repo Variable VIDEOS_PER_RUN se badalta hai.
+          VIDEOS_PER_RUN: ${{ vars.VIDEOS_PER_RUN || '1' }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PUBLIC_MEDIA_BASE_URL: ${{ vars.PUBLIC_MEDIA_BASE_URL }}
+        run: |
+          set -e
+          mkdir -p out/videos
+          count="${VIDEOS_PER_RUN:-1}"
+          for i in $(seq 1 "$count"); do
+            echo "=== Video $i / $count ==="
+            python -m video_factory.main
+            cp out/video.mp4 "out/videos/reel-$i.mp4"
+            cp out/metadata.json "out/videos/metadata-$i.json" || true
+          done
+
+      - name: Upload video artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel
+          path: |
+            out/videos
+            out/video.mp4
+            out/metadata.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Publish last video to a release (direct mp4 link)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f out/video.mp4 ]; then
+            echo "Video nahi bani, release skip."
+            exit 0
+          fi
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          gh release create latest out/video.mp4 out/metadata.json \
+            --title "Latest video" \
+            --notes "Sabse naya banaya gaya video. Seedha link: video.mp4" \
+            || echo "Release nahi bani — agli baar."
+
+      - name: Publish preview page (video plays in the browser)
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f out/video.mp4 ]; then
+            echo "Video nahi bani, player skip."
+            exit 0
+          fi
+          rm -rf site
+          if ! git clone --depth 1 --branch gh-pages \
+              "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site 2>/dev/null; then
+            rm -rf site
+            mkdir site
+            git -C site init -q
+            git -C site checkout -q -b gh-pages
+            git -C site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          cp preview/index.html site/index.html
+          cp out/video.mp4 site/video.mp4
+          git -C site add -A
+          git -C site -c user.name="deen-reels-bot" \
+              -c user.email="actions@users.noreply.github.com" \
+              commit -qm "preview" || true
+          git -C site push -q origin HEAD:gh-pages || echo "gh-pages push skip."
+
+      - name: Commit posting state
+        if: always()
+        run: |
+          if [ ! -f state.json ]; then
+            echo "state.json nahi mili, kuch commit nahi."
+            exit 0
+          fi
+          git config user.name "deen-reels-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.json
+          if git diff --cached --quiet; then
+            echo "State me koi change nahi."
+          else
+            git commit -m "chore: update posting state"
+            git push || echo "State push skip."
+          fi

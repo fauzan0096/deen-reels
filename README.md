@@ -49,18 +49,25 @@ DRY_RUN=yes python -m video_factory.main
 Video: `out/video.mp4`, details: `out/metadata.json`.
 `DRY_RUN=yes` = video banegi, post nahi hogi.
 
-## Video banana (abhi koi workflow nahi)
+## Kaam ka tareeqa (approve karne ke baad post)
 
-GitHub workflows hata diye gaye hain, is liye naya video apne aap nahi banta.
-Video banane ke liye:
+Workflows wapas lag gaye hain:
 
-```bash
-DRY_RUN=yes python -m video_factory.main    # ek video (out/video.mp4)
-DRY_RUN=yes python -m video_factory.batch   # saare hisse (out/all/)
-```
+- **Render all episodes** — saare hisse ek saath banata hai (dekhne aur download
+  ke liye). Kuch post nahi karta.
+- **Daily Deen Reel** — roz chalta hai. Kitni videos: repo **Variable
+  `VIDEOS_PER_RUN`** = `1` ya `2`.
+- **Preflight check** — token/channel check.
 
-Workflow wapas chahiye ho (rozana posting ya saare hisse ek saath banana) to
-batayein — dobara add kar diya jayega.
+**Posting ka switch:** repo **Variable `DRY_RUN`**
+
+- `DRY_RUN = yes` → rozana run sirf video banata hai, **kuch post nahi hota**
+  (review ke liye).
+- `DRY_RUN = no` → rozana run video banata hai aur YouTube/Facebook par **post**
+  bhi karta hai.
+
+Yani pehle videos dekhein, theek lagein, phir `DRY_RUN` ko `no` kar dein —
+us ke baad roz apne aap post hota rahega.
 
 ## Platform setup
 
@@ -197,17 +204,19 @@ Bana hua sehra background nahi chahiye to apni tasveerein daal do:
 
 ## Videos dekhna aur download karna
 
-Jo videos ab tak bani hain wo repo ki `gh-pages` branch me hain (`video.mp4`).
-Bina kisi setting ke seedha download:
+**Har hissa alag file (seedha download):**
+`https://github.com/fauzan0096/deen-reels/releases/download/parts/01-abu-bakr-ghar.mp4`
 
-- `https://raw.githubusercontent.com/fauzan0096/deen-reels/gh-pages/video.mp4`
+Naam wahi hain jo `content/stories.json` me id hain, jaise
+`08-abu-bakr-wafat-akhir.mp4`, `09-umar-taaruf.mp4` … `14-umar-shahadat.mp4`.
+Sab ek jagah: repo → **Releases** → **Saare hisse**.
 
-Browser me chalane ke liye GitHub Pages on karna zaroori hai:
-**Settings → Pages → Branch: `gh-pages` → Save**, phir
-`https://fauzan0096.github.io/deen-reels/`
+**Browser me chalane ke liye (gallery):** GitHub Pages on karna zaroori hai —
+**Settings → Pages → Branch: `gh-pages` → Save** — phir
+`https://fauzan0096.github.io/deen-reels/all/`
 
-Har hissa alag file/ صفحہ ke liye pehle `python -m video_factory.batch` chala
-kar `out/all/` banao (upar dekhein).
+Har video par nishan hota hai: upar baayein channel ka naam, neeche daayein
+**«ورثة الانبياء • حصہ 3/14»**.
 
 ## Imaan-dari ke notes
 
