@@ -57,33 +57,16 @@ _ARABIC_TO_ENGLISH_DIGITS = str.maketrans(
     "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"
 )
 
-_BOOKS_ENGLISH = {
-    "صحيح البخاري": "Sahih al-Bukhari",
-    "صحيح مسلم": "Sahih Muslim",
-}
-
 
 def source_line(story: dict) -> str:
-    """Hawala English me: kitab ka naam + hadees number + jild/safha."""
+    """Hawala: kitab ka naam Arabic me, sirf hadees/dafa numbers English digits me."""
     source = story.get("source") or {}
-    book_raw = str(source.get("book", "")).strip()
-    title = source.get("en") or _BOOKS_ENGLISH.get(
-        book_raw.strip("«» "), book_raw.strip("«» ")
-    )
-
+    book = str(source.get("book", "")).strip()
     ref = str(source.get("ref", "")).translate(_ARABIC_TO_ENGLISH_DIGITS)
-    for urdu, english in (
-        ("حدیث", "Hadith"),
-        ("حديث", "Hadith"),
-        ("،", ","),
-        ("ج ", "Vol "),
-        ("ص ", "p. "),
-    ):
-        ref = ref.replace(urdu, english)
 
-    if title and ref:
-        return f"{title} — {ref}"
-    return title or ref
+    if book and ref:
+        return f"{book} — {ref}"
+    return book or ref
 
 
 def _safe_title(text: str) -> str:
