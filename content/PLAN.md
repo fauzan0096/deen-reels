@@ -1,46 +1,66 @@
 # Ashara Mubashara — 10 din ka plan
 
-Yeh wo das sahaba hain jin ke baare me hadees me jannat ki khushkhabri aayi
-("عشرة مبشرة بالجنة"). Har din ek sahabi ka ek bara waqiya, hawale ke saath.
+Wo das sahaba jin ke baare me hadees me jannat ki khushkhabri aayi
+("عشرة مبشرة بالجنة"). Har din **ek sahabi**, ek video (~1 minute).
 
-**Kitabein:** Sahih al-Bukhari (id 1681, ط السلطانية) aur Sahih Muslim
-(id 1727, ت عبد الباقي). Har video se pehle us waqiya ka poora matn Shamela se
-parh kar likha jayega — bina dekhe kuch nahi likha jata.
+## Har video ka dhancha (har sahabi ke liye wahi)
+
+1. **تعارف** — poora naam aur nasab (kis ke bete, kis qabeela se)
+2. **پیدائش** — kab aur kahan paida hue (jahan riwayat me ho)
+3. **رسول ﷺ سے نسبت** — Islam kab qubool kiya, Nabi ﷺ se kya rishta
+4. **اہم واقعہ** — ek bara waqiya, Arabic matn ke saath
+5. **ایک صفت** — un ki ek khaas sift (jaise sachai, sakhawat, amanat)
+6. **وفات** — kab aur kahan wafat hue
+7. **بڑے کام** — un ki ek bari khidmat
+
+## Kitabein (sirf yahi)
+
+- **Sahih al-Bukhari** (صحيح البخاري — ط السلطانية) aur **Sahih Muslim**
+  (صحيح مسلم — ت عبد الباقي): waqiya ka asal matn aur hadees number.
+- **Siyar A'lam al-Nubala**, **Al-Isabah**, **Al-Isti'ab**: nasab, paidaish,
+  wafat aur sifaat ki tafseel.
+- Hadees ki **grading apne tor par nahi** — jo kitab me likhi hai wahi jayegi.
+- Jo baat kisi kitab me na mile, wo **likhi hi nahi jayegi** (andaza nahi).
 
 ## Din ke hisaab se
 
-| # | Sahabi | Waqiya | Hawala (Shamela) | Status |
-|---|---|---|---|---|
-| 1 | ابو بکر صدیق رضی اللہ عنہ | غار ثور میں نبی ﷺ کے ساتھ، اور "لا تحزن" کا موقع | Muslim: باب من فضائل أبي بكر (1126) | matn lena baqi |
-| 2 | عمر بن خطاب رضی اللہ عنہ | اسلام لانے ka din — As ibn Wail ka bachao | Bukhari: باب إسلام عمر (2215) | ✓ matn liya |
-| 3 | عثمان بن عفان رضی اللہ عنہ | غزوۂ تبوک میں مال کا خرچ (جیش العسرة) | Muslim: باب من فضائل عثمان (1128) | matn lena baqi |
-| 4 | علی بن ابی طالب رضی اللہ عنہ | خیبر کے دن جھنڈا اور فتح | Muslim: باب من فضائل علي (1129) | matn lena baqi |
-| 5 | طلحہ و زبیر رضی اللہ عنہما | اُحد کے دن نبی ﷺ کی حفاظت | Muslim: باب من فضائل طلحة والزبير (1131) | matn lena baqi |
-| 6 | سعد بن ابی وقاص رضی اللہ عنہ | "میں اسلام کا ایک تہائی تھا" | Bukhari: باب إسلام سعد (2211) | ✓ matn liya |
-| 7 | ابو عبیدہ بن الجراح رضی اللہ عنہ | "اس امت کے امین" — نبی ﷺ کا فرمان | Muslim/Bukhari (hadith: أمين هذه الأمة) | matn lena baqi |
-| 8 | عبد الرحمن بن عوف رضی اللہ عنہ | ہجرت کے بعد کا سبق: "دکھاؤ مجھے بازار کا راستہ" | Bukhari (مناقب الانصار) | matn lena baqi |
-| 9 | سعید بن زید رضی اللہ عنہ | ان کے اسلام لانے ka waqiya | Bukhari: باب إسلام سعيد بن زيد (2214) | ✓ chapter mila, matn lena baqi |
-| 10 | ابو ذر غفاری رضی اللہ عنہ (bonus) | پہلا شخص جس نے نبی ﷺ کو اسلام کا سلام کہا | Muslim: باب من فضائل أبي ذر (1153) | ✓ matn liya |
+1. ابو بکر صدیق رضی اللہ عنہ
+2. عمر بن خطاب رضی اللہ عنہ
+3. عثمان بن عفان رضی اللہ عنہ
+4. علی بن ابی طالب رضی اللہ عنہ
+5. طلحہ بن عبید اللہ رضی اللہ عنہ
+6. زبیر بن العوام رضی اللہ عنہ
+7. سعد بن ابی وقاص رضی اللہ عنہ
+8. سعید بن زید رضی اللہ عنہ
+9. عبد الرحمن بن عوف رضی اللہ عنہ
+10. ابو عبیدہ بن الجراح رضی اللہ عنہ
 
-## Usool (har video par lagoo)
+## Kaam ka tareeqa
 
-- **Ek din = ek sahabi.** 10 din ka safar, phir naye naam.
-- Har video me hawala: **kitab + chapter + hadees number + jild/safha**.
-- Arabic matn harf-ba-harf (Shamela se), Urdu tarjuma apne alfaz me.
-- Hadith ki grading apne tor par nahi — jo kitab/hawale me hai wahi.
-- Jin ashaab ke liye Sahihain me alag chapter nahi (Abu Ubaydah, Abdur Rahman
-  ibn Awf), un ka waqiya kisi aur mustanad hawale se liya jayega — pehle matn
-  dekha jayega, phir likha jayega.
+1. Us sahabi ka baab Shamela se parhna (Sahihain + tarajim).
+2. `content/stories.json` me story jodna — har beat par `label`
+   (تعارف، پیدائش، اہم واقعہ...).
+3. Hawala screen par rehta hai: kitab + hadees number + jild/safha.
 
-## Agla qadam
+Story ka format:
 
-1. Har din ka matn Shamela se parhna (Sahihain se).
-2. `content/stories.json` me us din ki story jodna.
-3. Video banti hai, hawala screen par rehta hai.
+```json
+{
+  "id": "abu-bakr",
+  "title": "ابو بکر صدیق رضی اللہ عنہ",
+  "hook": "...",
+  "beats": [
+    { "label": "تعارف", "urdu": "...", "arabic": "..." },
+    { "label": "پیدائش", "urdu": "..." },
+    { "label": "اہم واقعہ", "urdu": "...", "arabic": "..." }
+  ],
+  "lesson": "...",
+  "source": { "book": "«صحيح مسلم»", "ref": "حدیث ۲۳۸۳، ج ۴ ص ۱۸۵۴" }
+}
+```
 
-## Kya batana zaroori hai
+## Status
 
-- Abhi `content/stories.json` me 6 waqiye hain (julaybib, bilal, umar, sa'd,
-  abu dharr, abu dujanah). Naye 10 is list ke hisaab se **ek ek kar ke** jodenge.
-- Hadith ka number aur jild/safha wahi rahega jo Shamela dikhati hai;
-  andaza lagaya hua number kabhi nahi.
+- Dhancha tayyar hai: labels, hawala, ~1 minute video, ek din ek sahabi.
+- Har sahabi ka matn **ek ek kar ke** Shamela se parh kar likha jayega —
+  dekhe baghair kuch nahi likha jata.

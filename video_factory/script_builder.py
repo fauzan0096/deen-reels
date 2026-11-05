@@ -109,6 +109,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             Card(
                 text=_sentence(beat.get("urdu")),
                 arabic=beat.get("arabic", ""),
+                label=beat.get("label", ""),
                 spoken=_sentence(beat.get("urdu")),
             )
         )
