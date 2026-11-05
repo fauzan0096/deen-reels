@@ -29,7 +29,7 @@ Usul yeh hain:
 - Tarjuma apne alfaz me ho sakta hai, lekin **Arabic quote harf-ba-harf** ho.
 - `lesson` sirf ek chhota nateeja hai — tafseer ya sharah ka dawa nahi.
 
-Abhi 8 stories hain (Abu Bakr Siddiq ka poora silsila). Nayi jodne ka tareeqa: `content/SOURCES.md`.
+Abhi 13 stories hain (Abu Bakr Siddiq ke 8, Umar bin Khattab ke 5). Nayi jodne ka tareeqa: `content/SOURCES.md`.
 
 ## Kya chahiye
 
@@ -204,5 +204,5 @@ Bana hua sehra background nahi chahiye to apni tasveerein daal do:
   file me theek kar dijiye.
 - Kisi bhi waqiya ke saath **sirf wahi hawala** dijiye jo aap dekh sakein. Andaza
   lagaya hua hadees number ya kitab ka naam kabhi na likhiye.
-- `content/stories.json` me 8 stories hain, isliye ek hafte se zyada chalega;
+- `content/stories.json` me 13 stories hain, isliye do hafte chalega;
   nayi jodte rahiye.
