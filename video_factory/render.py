@@ -240,7 +240,7 @@ def render(
         "-c:v",
         "libx264",
         "-preset",
-        "medium",
+        "veryfast",
         "-b:v",
         "800k",
         "-maxrate",

@@ -38,6 +38,7 @@ Style: Arabic,Noto Naskh Arabic,56,&H00F5E9D0,&H000000FF,&H00120F0A,&H96000000,0
 Style: Body,Noto Naskh Arabic,62,&H00FFFFFF,&H008A8A8A,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
 Style: Sub,Noto Naskh Arabic,44,&HCCE6EEF2,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,0,0,1,2,1,5,50,50,0,1
 Style: Footer,Noto Naskh Arabic,38,&H00A6D9E8,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
+Style: Sign,Noto Naskh Arabic,30,&H80E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,1,0,3,50,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -477,6 +478,7 @@ def build_captions(
     timings: Optional[Sequence[Tuple[float, float]]] = None,
     words: Optional[Sequence[Tuple[float, float]]] = None,
     source_text: str = "",
+    sign_text: str = "",
 ) -> Path:
     total_cs = max(1, int(round(duration * 100)))
 
@@ -508,6 +510,17 @@ def build_captions(
             f"{{\\an7\\pos(55,95)}}{_wrap(_clean(header_text), 34)}",
         )
     ]
+
+    # Har video par nishan: neeche daayein taraf channel ka naam aur hissa number.
+    if sign_text:
+        events.append(
+            _dialogue(
+                0,
+                total_cs,
+                "Sign",
+                f"{{\\an3\\pos(1025,1835)}}{_wrap(_clean(sign_text), 26)}",
+            )
+        )
 
     for index, (card, (start, end)) in enumerate(zip(cards, spans_cs)):
         if start >= total_cs or end <= start:

@@ -96,7 +96,12 @@ def publish(cfg: Config, video_path: Path, script: Script) -> list:
 
 
 def render_story(
-    cfg: Config, lang: dict, story: dict, ordinal: int, out_dir: Path
+    cfg: Config,
+    lang: dict,
+    story: dict,
+    ordinal: int,
+    total: int,
+    out_dir: Path,
 ) -> dict:
     """Ek story ka video: TTS → ambience → background → captions → render.
 
@@ -152,6 +157,7 @@ def render_story(
         timings=timings,
         words=transcript.words,
         source_text=source_line(story),
+        sign_text=f"{cfg.channel_name} • حصہ {ordinal + 1}/{total}",
     )
     logo_path = ensure_logo(Path("assets") / "logo.png") if cfg.logo else None
 
@@ -198,7 +204,7 @@ def main() -> int:
     ensure_tools()
 
     out_dir = cfg.out_dir
-    info = render_story(cfg, lang, story, ordinal, out_dir)
+    info = render_story(cfg, lang, story, ordinal, len(stories), out_dir)
     video_path = info["video"]
     script = info["script"]
     duration = info["duration"]
