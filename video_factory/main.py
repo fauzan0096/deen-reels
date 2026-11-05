@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import traceback
 from pathlib import Path
 
 from .config import ROOT, Config, load_config
@@ -198,6 +199,8 @@ def run() -> int:
         return main()
     except Exception as exc:  # noqa: BLE001
         log(f"ERROR: {exc}")
+        # Poora traceback bhi, warna line number ka pata nahi chalta.
+        log(traceback.format_exc())
         return 1
 
 
