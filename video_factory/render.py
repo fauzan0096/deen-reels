@@ -18,9 +18,9 @@ VIDEO_SUFFIXES = {".mp4", ".mov", ".webm", ".m4v"}
 
 
 def _background_input(background: Path) -> list:
-    """Image ho to loop karke, video ho to stream_loop se chalta hai."""
+    """Image ho to loop karke, video ho to sirf ek baar chalta hai."""
     if Path(background).suffix.lower() in VIDEO_SUFFIXES:
-        return ["-stream_loop", "-1", "-i", str(background)]
+        return ["-i", str(background)]
     return ["-loop", "1", "-framerate", "30", "-i", str(background)]
 
 
@@ -200,6 +200,10 @@ def render(
         f"scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,"
         f"crop={WIDTH}:{HEIGHT}"
     )
+    # Video background: khatam hone par aakhri frame par ruk jaye (logo end me
+    # reh jaye, beech me ghoom kar na aaye).
+    if Path(background).suffix.lower() in VIDEO_SUFFIXES:
+        scale_crop += f",tpad=stop_mode=clone:stop_duration={max(1.0, duration) + 2:.1f}"
     subtitles = f"ass={captions}:fontsdir={fonts_dir}"
 
     command = ["ffmpeg", "-hide_banner", "-loglevel", "warning", "-y"]
