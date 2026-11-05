@@ -1,7 +1,7 @@
 # Plan — ek sahabi, ek silsila
 
-Filhaal repo me **sirf Abu Bakr Siddiq رضی اللہ عنہ ka pehla hissa** hai.
-Baqi hisse review ke baad, tarteeb se, ek ek kar ke jodenge.
+Filhaal repo me **Abu Bakr Siddiq رضی اللہ عنہ ka poora silsila (8 hisse)**
+hai, tarteeb se — har hissa ek waqiya aur ek hawala.
 
 ## Har video ka dhancha (jahan maujood ho)
 
@@ -18,7 +18,7 @@ ka silsila chand hisson me chalta hai. Har hisse ka apna **ek hawala**
 hota hai — video me hamesha nazar aata hai, aur agle hisse ki targheeb
 (aakhri line) bhi usi hisse me di jati hai.
 
-## Abu Bakr Siddiq رضی اللہ عنہ — 7 hisse (tarteeb)
+## Abu Bakr Siddiq رضی اللہ عنہ — 8 hisse (tarteeb)
 
 | # | Hissa | Asal matn | Hawala |
 |---|---|---|---|
@@ -26,12 +26,13 @@ hota hai — video me hamesha nazar aata hai, aur agle hisse ki targheeb
 | 2 | وصال کا دن — «من كان يعبد محمدا» | «فمن كان يعبد محمدا فإن محمدا قد مات...» | السنن الكبير للبيهقي — ج 16 ص 510 |
 | 3 | سقیفہ بنو ساعدہ کا فیصلہ | «أنشدكم الله، هل تعلمون أن رسول الله ﷺ أمر أبا بكر أن يصلي بالناس؟» | الاستيعاب — ج 3 ص 970 |
 | 4 | نماز اور زکات میں فرق نہیں | «لأقاتلن من فرق بين الصلاة والزكاة، فإن الزكاة حق المال» | صحيح البخاري — حدیث 1399 |
-| 5 | سخاوت اور مسجد کا خوخہ | «إن أمن الناس علي في ماله وصحبته أبو بكر... لا تُبقين في المسجد خوخة إلا خوخة أبي بكر» | صحيح مسلم — حدیث 2382، ج 4 ص 1854 |
-| 6 | «خليفة رسول الله» — اور امت کی گواہی | «لست بخليفة الله، ولكني خليفة رسول الله ﷺ» | الاستيعاب — ج 3 ص 972 |
-| 7 | بیعت اور قرآن کا جمع | «إني آليت ألا أرتدي ردائي إلا إلى صلاة حتى أجمع القرآن» | الاستيعاب — ج 3 ص 974 |
+| 5 | سخاوت اور مسجد کا خوخہ | «لا تُبقين في المسجد خوخة إلا خوخة أبي بكر» | صحيح مسلم — حدیث 2382، ج 4 ص 1854 |
+| 6 | «خليفة رسول الله» — اور امت کی گواہی | «لست بخليفة الله ... ولكني أنا خليفة رسول الله» | الاستيعاب — ج 3 ص 972 |
+| 7 | عام بیعت، اور علی رضی اللہ عنہ کا عذر | «إني آليت ألا أرتدى ردائي إلا إلى صلاة حتى أجمع القرآن» (علی رضی اللہ عنہ) | الاستيعاب — ج 3 ص 972، 974 |
+| 8 | وفات، وصیت اور تدفین | «وأوصى أن تغسله أسماء بنت عميس زوجته...» | الاستيعاب — ج 3 ص 977 |
 
-Hissa 1 repo me hai. Hissa 2–7 ka matn chat me review ke liye diya jata
-hai; tasdeeq ke baad hi `content/stories.json` me joda jata hai.
+Har hisse ka matn **Shamela se parh kar** likha gaya hai; jo pada nahi gaya wo
+likha nahi gaya. Agla silsila: Umar bin Khattab رضی اللہ عنہ (5 hisse).
 
 ## Uske baad (isi tarteeb se)
 
