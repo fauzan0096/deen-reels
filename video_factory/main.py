@@ -165,6 +165,7 @@ def main() -> int:
         title=script.title,
         timings=timings,
         words=transcript.words,
+        source_text=source_line(story),
     )
     logo_path = ensure_logo(Path("assets") / "logo.png") if cfg.logo else None
 

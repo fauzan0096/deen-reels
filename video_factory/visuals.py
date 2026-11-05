@@ -476,6 +476,7 @@ def build_captions(
     title: str = "Deen Reels",
     timings: Optional[Sequence[Tuple[float, float]]] = None,
     words: Optional[Sequence[Tuple[float, float]]] = None,
+    source_text: str = "",
 ) -> Path:
     total_cs = max(1, int(round(duration * 100)))
 
@@ -507,6 +508,17 @@ def build_captions(
             f"{{\\an7\\pos(55,95)}}{_wrap(_clean(header_text), 34)}",
         )
     ]
+
+    # Hawala poori video me upar dikhta rahe.
+    if source_text:
+        events.append(
+            _dialogue(
+                0,
+                total_cs,
+                "Footer",
+                f"{{\\an7\\pos(55,175)}}{_wrap(_clean(source_text), 46)}",
+            )
+        )
 
     for index, (card, (start, end)) in enumerate(zip(cards, spans_cs)):
         if start >= total_cs or end <= start:
