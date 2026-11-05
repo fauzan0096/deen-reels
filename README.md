@@ -49,18 +49,18 @@ DRY_RUN=yes python -m video_factory.main
 Video: `out/video.mp4`, details: `out/metadata.json`.
 `DRY_RUN=yes` = video banegi, post nahi hogi.
 
-## Roz automatic (GitHub Actions) — free
+## Video banana (abhi koi workflow nahi)
 
-1. Ye folder GitHub par repo bana kar push kijiye.
-2. Repo → **Settings → Actions → General → Workflow permissions** →
-   **Read and write permissions** (state commit karne ke liye zaroori).
-3. **Settings → Secrets and variables → Actions** me credentials daaliye.
-4. **Actions** → **Preflight check** → **Run workflow** (kuch post nahi hoga,
-   sirf batayega ki setup theek hai ya nahi).
-5. **Actions** → **Daily Deen Reel** → **Run workflow**, pehle `dry_run` on rakh kar.
+GitHub workflows hata diye gaye hain, is liye naya video apne aap nahi banta.
+Video banane ke liye:
 
-Default timing `02:30 UTC` = `08:00 IST`. Badalna ho to
-`.github/workflows/daily.yml` me cron line badal dijiye (cron UTC me hota hai).
+```bash
+DRY_RUN=yes python -m video_factory.main    # ek video (out/video.mp4)
+DRY_RUN=yes python -m video_factory.batch   # saare hisse (out/all/)
+```
+
+Workflow wapas chahiye ho (rozana posting ya saare hisse ek saath banana) to
+batayein — dobara add kar diya jayega.
 
 ## Platform setup
 
@@ -112,14 +112,12 @@ Chaha to **Variables** tab me `CHANNEL_NAME` bhi daal dijiye (video par yehi naa
 
 **4. Check kijiye (kuch post nahi hoga)**
 
-**Actions → Preflight check → Run workflow**. Green tick = sab theek.
-Local par bhi: `python scripts/preflight.py`.
+Local par: `python scripts/preflight.py` — batata hai ki token aur channel theek hain ya nahi.
 
 **5. Pehli video**
 
-**Actions → Daily Deen Reel → Run workflow** → `dry_run` par tick → run ke baad
-**Artifacts → reel** se `video.mp4` download kar ke dekh lijiye. Theek lage to
-`dry_run` hata kar dobara chalaiye.
+`DRY_RUN=yes python -m video_factory.main` — video `out/video.mp4` me banti hai,
+post nahi hoti. Theek lage to `DRY_RUN` hata kar dobara chalaiye.
 
 > **Token expiry:** OAuth app jab tak "Testing" me hai, refresh token **7 din** me
 > expire hota hai (har hafte naya token daalna padega). Isse bachne ke liye
@@ -197,19 +195,19 @@ Bana hua sehra background nahi chahiye to apni tasveerein daal do:
 - Tasveer vertical (1080x1920) ho to sabse acha; warna beech se crop hogi.
 - Tasveerein apni hon ya free license wali — kisi aur ki video se frame utha kar na lagao.
 
-## Saare hisse ek saath dekhna aur download karna
+## Videos dekhna aur download karna
 
-1. GitHub → **Actions** → **Render all episodes** → **Run workflow**.
-2. Chalees minute ke andar taiyar (14 videos). Phir browser me:
-   - `https://<github-user>.github.io/deen-reels/all/` — sab videos ek page par
-   - `.../all/download.html` — har hissa alag download link
-   - `.../all/01-abu-bakr-ghar/` — ek hissa akela, download button ke saath
-3. iPhone par download: video chala kar **Share → Save to Files**.
-4. Ye run **kuch post nahi karta** aur `state.json` bhi nahi badalta;
-   video files Actions ke **artifact `all-reels`** me bhi milti hain.
+Jo videos ab tak bani hain wo repo ki `gh-pages` branch me hain (`video.mp4`).
+Bina kisi setting ke seedha download:
 
-Har video par nishan hota hai: upar baayein channel ka naam, neeche daayein
-**«ورثة الانبياء • حصہ 3/14»**.
+- `https://raw.githubusercontent.com/fauzan0096/deen-reels/gh-pages/video.mp4`
+
+Browser me chalane ke liye GitHub Pages on karna zaroori hai:
+**Settings → Pages → Branch: `gh-pages` → Save**, phir
+`https://fauzan0096.github.io/deen-reels/`
+
+Har hissa alag file/ صفحہ ke liye pehle `python -m video_factory.batch` chala
+kar `out/all/` banao (upar dekhein).
 
 ## Imaan-dari ke notes
 
