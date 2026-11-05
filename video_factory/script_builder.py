@@ -114,9 +114,9 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             )
         )
     cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=lesson))
-    cards.append(Card(text=closing, footer=citation, spoken=closing))
-    # Aakhir me marketing line.
-    cards.append(Card(text=outro, sub=cta, spoken=outro))
+    cards.append(Card(text=closing, spoken=closing))
+    # Aakhir me marketing line, aur uske neeche saaf hawala.
+    cards.append(Card(text=outro, sub=cta, footer=citation, spoken=outro))
 
     title = _safe_title(f"{story['title']} | {cfg.channel_name} #Shorts")
     if len(title) > 100:

@@ -37,7 +37,7 @@ Style: Title,Noto Naskh Arabic,84,&H00FFFFFF,&H00808080,&H00120F0A,&H96000000,0,
 Style: Arabic,Noto Naskh Arabic,56,&H00F5E9D0,&H000000FF,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
 Style: Body,Noto Naskh Arabic,62,&H00FFFFFF,&H008A8A8A,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
 Style: Sub,Noto Naskh Arabic,44,&HCCE6EEF2,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,0,0,1,2,1,5,50,50,0,1
-Style: Footer,Noto Naskh Arabic,30,&H99D9E2E6,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
+Style: Footer,Noto Naskh Arabic,38,&H00A6D9E8,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -508,17 +508,6 @@ def build_captions(
             f"{{\\an7\\pos(55,95)}}{_wrap(_clean(header_text), 34)}",
         )
     ]
-
-    # Hawala poori video me upar dikhta rahe.
-    if source_text:
-        events.append(
-            _dialogue(
-                0,
-                total_cs,
-                "Footer",
-                f"{{\\an7\\pos(55,175)}}{_wrap(_clean(source_text), 46)}",
-            )
-        )
 
     for index, (card, (start, end)) in enumerate(zip(cards, spans_cs)):
         if start >= total_cs or end <= start:
