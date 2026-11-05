@@ -34,6 +34,32 @@ def _honor_title(title: str) -> str:
     return f"{title} رضی اللہ عنہ" if title else title
 
 
+# Sunne me talaffuz theek aaye — sirf awaaz ke liye. Screen par Urdu hi rehta hai.
+_PRONOUNCE = [
+    ("ابن ابی قحافہ", "ابنِ أَبِي قُحَافَة"),
+    ("ابی قحافہ", "أَبِي قُحَافَة"),
+    ("یا رسول اللہ", "يَا رَسُولَ الله"),
+    ("رسول اللہ", "رَسُولَ الله"),
+    ("رضی اللہ عنہم", "رَضِيَ اللهُ عَنْهُمْ"),
+    ("رضی اللہ عنہما", "رَضِيَ اللهُ عَنْهُمَا"),
+    ("رضی اللہ عنہا", "رَضِيَ اللهُ عَنْهَا"),
+    ("رضی اللہ عنہ", "رَضِيَ اللهُ عَنْهُ"),
+    ("عبد اللہ", "عَبْدُ الله"),
+    ("ابو بکر", "أَبُو بَكْر"),
+]
+
+# Aakhri line me "سبسکرائب" — beech wale cards se hata diya jata hai.
+_SUBSCRIBE = re.compile(r"[^۔]*سبسکرائب[^۔]*۔?")
+
+
+def _speak(text: str) -> str:
+    if not text:
+        return text
+    for urdu, arabic in _PRONOUNCE:
+        text = text.replace(urdu, arabic)
+    return text
+
+
 @dataclass
 class Card:
     """Video ka ek screen.
@@ -125,25 +151,26 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             text=story_title,
             sub=hook,
             label=lang["label_story"],
-            spoken=opening or story_title,
+            spoken=_speak(opening or story_title),
         )
     ]
     for beat in story.get("beats", []):
+        body = _sentence(beat.get("urdu"))
         cards.append(
             Card(
-                text=_sentence(beat.get("urdu")),
+                text=body,
                 arabic=beat.get("arabic", ""),
                 label=beat.get("label", ""),
-                spoken=_sentence(beat.get("urdu")),
+                spoken=_speak(body),
             )
         )
-    cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=lesson))
-    cards.append(Card(text=closing, spoken=closing))
-    # Agla hissa aane wala ho to us ki targheeb, phir marketing line.
-    next_hint = _sentence(story.get("next_hint"))
+    cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=_speak(lesson)))
+    cards.append(Card(text=closing, spoken=_speak(closing)))
+    # Beech ke cards par subscribe ki baat nahi — wo sirf aakhri line me.
+    next_hint = _sentence(_SUBSCRIBE.sub("", story.get("next_hint") or "").strip())
     if next_hint:
-        cards.append(Card(text=next_hint, sub=cta, spoken=next_hint))
-    cards.append(Card(text=outro, sub=cta, footer=citation, spoken=outro))
+        cards.append(Card(text=next_hint, spoken=_speak(next_hint)))
+    cards.append(Card(text=outro, sub=cta, footer=citation, spoken=_speak(outro)))
 
     title = _safe_title(f"{story_title} | {cfg.channel_name} #Shorts")
     if len(title) > 100:
