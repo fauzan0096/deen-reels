@@ -10,6 +10,13 @@ on:
         description: "Sirf video banao, publish mat karo"
         type: boolean
         default: true
+      lang:
+        description: "Zuban: ur (Urdu) ya hi (Roman + Hindi)"
+        type: choice
+        options:
+          - ur
+          - hi
+        default: ur
 
   # Code badalne par ek sample video banao (publish nahi) — naya look dekhne ke liye.
   push:
@@ -50,7 +57,7 @@ jobs:
       - name: Build and publish
         env:
           CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
-          VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          VIDEO_LANG: ${{ github.event.inputs.lang || vars.VIDEO_LANG || 'ur' }}
           VOICE: ${{ vars.VOICE }}
           TTS_RATE: ${{ vars.TTS_RATE || '+0%' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
