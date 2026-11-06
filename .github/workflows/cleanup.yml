@@ -1,0 +1,78 @@
+name: Clean old videos
+
+# GitHub par pade purane video hata deta hai: releases (latest, parts),
+# workflow artifacts, aur gh-pages par rakhi purani files.
+# Site par sirf ek naya video rehta hai — wo rozana wala workflow rakhta hai.
+#
+# Ek dafa chalane ke liye: Actions → "Clean old videos" → Run workflow.
+
+on:
+  workflow_dispatch:
+  # Ye file badalne par ek dafa khud chal jata hai.
+  push:
+    paths:
+      - ".github/workflows/cleanup.yml"
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Delete every release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release list --limit 100 --json tagName --jq '.[].tagName' \
+            | while read -r tag; do
+                [ -z "$tag" ] && continue
+                echo "release delete: $tag"
+                gh release delete "$tag" --yes --cleanup-tag || true
+              done
+
+      - name: Delete every workflow artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            --jq '.artifacts[].id' \
+            | while read -r id; do
+                [ -z "$id" ] && continue
+                echo "artifact delete: $id"
+                gh api -X DELETE \
+                  "repos/${GITHUB_REPOSITORY}/actions/artifacts/$id" || true
+              done
+
+      - name: Keep only the newest video on the site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf site
+          if ! git clone --depth 1 --branch gh-pages \
+              "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site 2>/dev/null; then
+            echo "gh-pages branch nahi mili — kaam khatam."
+            exit 0
+          fi
+          # Index page aur ek naya video rehne do, baaki sab (purane hisse) hata do.
+          find site -mindepth 1 -maxdepth 1 \
+            ! -name .git ! -name index.html ! -name video.mp4 \
+            -exec rm -rf {} +
+          if git -C site diff --quiet && [ -z "$(git -C site status --porcelain)" ]; then
+            echo "Kuch delete karne ko nahi mila."
+            exit 0
+          fi
+          git -C site add -A
+          git -C site -c user.email="actions@users.noreply.github.com" \
+            -c user.name="deen-reels-bot" \
+            commit -m "chore: remove old videos" || true
+          git -C site push origin HEAD:gh-pages || echo "Push skip."

@@ -91,21 +91,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Publish last video to a release (direct mp4 link)
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ ! -f out/video.mp4 ]; then
-            echo "Video nahi bani, release skip."
-            exit 0
-          fi
-          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
-          gh release create latest out/video.mp4 out/metadata.json \
-            --title "Latest video" \
-            --notes "Sabse naya banaya gaya video. Seedha link: video.mp4" \
-            || echo "Release nahi bani — agli baar."
-
       - name: Publish preview page (video plays in the browser)
         if: always()
         env:
@@ -124,6 +109,8 @@ jobs:
             git -C site checkout -q -b gh-pages
             git -C site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           fi
+          # Site par sirf yahi nayi video rahe — purani files hata do.
+          find site -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
           cp preview/index.html site/index.html
           cp out/video.mp4 site/video.mp4
           git -C site add -A
@@ -137,17 +124,12 @@ jobs:
         run: |
           git config user.name "deen-reels-bot"
           git config user.email "actions@users.noreply.github.com"
-          # Site par seedha chalne ke liye aakhri video repo me bhi rakho.
-          if [ -f out/video.mp4 ]; then
-            cp out/video.mp4 sample.mp4
-            git add sample.mp4
-          fi
           if [ -f state.json ]; then
             git add state.json
           fi
           if git diff --cached --quiet; then
             echo "Kuch commit karne ko nahi."
           else
-            git commit -m "chore: update sample video and posting state"
+            git commit -m "chore: update posting state"
             git push || echo "State push skip."
           fi

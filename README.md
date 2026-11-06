@@ -55,8 +55,9 @@ Video: `out/video.mp4`, details: `out/metadata.json`.
 
 Workflows wapas lag gaye hain:
 
-- **Render all episodes** — saare hisse ek saath banata hai (dekhne aur download
-  ke liye). Kuch post nahi karta.
+- **Render all episodes** — saare hisse ek saath banata hai (Artifacts se
+  download kijiye). Kuch post nahi karta, kahin publish nahi karta. Sirf
+  haath se chalane par chalta hai.
 - **Daily Deen Reel** — roz chalta hai. Kitni videos: repo **Variable
   `VIDEOS_PER_RUN`** = `1` ya `2`.
 - **Preflight check** — token/channel check.
@@ -225,18 +226,19 @@ Bana hua sehra background nahi chahiye to apni tasveerein daal do:
 - Tasveer vertical (1080x1920) ho to sabse acha; warna beech se crop hogi.
 - Tasveerein apni hon ya free license wali — kisi aur ki video se frame utha kar na lagao.
 
-## Videos dekhna aur download karna
+## Videos dekhna
 
-**Har hissa alag file (seedha download):**
-`https://github.com/fauzan0096/deen-reels/releases/download/parts/01-abu-bakr-ghar.mp4`
+**Sirf sabse nayi video, ek hi page par:**
+`https://fauzan0096.github.io/deen-reels/`
 
-Naam wahi hain jo `content/stories.json` me id hain, jaise
-`08-abu-bakr-wafat-akhir.mp4`, `09-umar-taaruf.mp4` … `14-umar-shahadat.mp4`.
-Sab ek jagah: repo → **Releases** → **Saare hisse**.
+Rozana wala workflow gh-pages par sirf **aakhri bani video** rakhta hai — purani
+files har run me hata di jati hain. YouTube jaisi purani video nahi, bas jo abhi
+bani hai.
 
-**Browser me chalane ke liye (gallery):** GitHub Pages on karna zaroori hai —
-**Settings → Pages → Branch: `gh-pages` → Save** — phir
-`https://fauzan0096.github.io/deen-reels/all/`
+**Purane video hataana:** Actions → **Clean old videos** → *Run workflow*. Ye
+GitHub par pade saare releases (latest, parts) aur workflow artifacts delete kar
+deta hai, aur site par sirf nayi video rehne deta hai.
+
 
 Har video par nishan hota hai: upar baayein channel ka naam, neeche daayein
 **«ورثة الانبياء • حصہ 3/14»**.
