@@ -29,6 +29,8 @@ from .i18n import LANGS, get_lang
 from .roman import URDU_RE, unknown_words
 from .script_builder import build_script
 from .stories import load_stories
+from .talaffuz import WORDS as TALAFFUZ_WORDS
+from .talaffuz import say as speak
 from .thumbnail import thumbnail_text
 from .visuals import IMAGE_SUFFIXES, build_captions
 
@@ -95,6 +97,18 @@ def _check_settings(cfg, out: Result) -> None:
     voice = cfg.voice or ""
     if voice and not re.match(r"^[a-z]{2,3}-[A-Z]{2}-\w+Neural$", voice):
         out.warn("VOICE", f"{voice!r} naam ajeeb lagta hai")
+
+
+def _check_talaffuz(out: Result) -> None:
+    sample = speak("ابو بکر نے 13 برس خلافت کی۔")
+    if "13" in sample:
+        out.fail("Talaffuz", "adad Urdu lafz me nahi badle (13 waisa hi reh gaya)")
+    elif "اَبُو بَکْر" not in sample:
+        out.fail("Talaffuz", "naam par harakat nahi lagi")
+    elif "۔" in sample:
+        out.fail("Talaffuz", "Urdu full stop TTS ke liye saaf nahi hua")
+    else:
+        out.ok("Talaffuz", f"{len(TALAFFUZ_WORDS)} lafz harakat ke saath")
 
 
 def _check_stories(stories, out: Result) -> None:
@@ -241,6 +255,7 @@ def main() -> int:
     out = Result()
 
     _check_settings(cfg, out)
+    _check_talaffuz(out)
 
     stories_path = Path(ROOT) / "content" / "stories.json"
     if stories_path.exists():

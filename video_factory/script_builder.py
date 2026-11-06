@@ -12,6 +12,7 @@ from typing import List, Optional
 
 from .config import Config
 from .roman import to_roman
+from .talaffuz import say as _speak
 
 SENTENCE_END = "۔"
 _ENDINGS = "۔.!?؟:؛"
@@ -35,38 +36,9 @@ def _honor_title(title: str) -> str:
     return f"{title} رضی اللہ عنہ" if title else title
 
 
-# Sunne me talaffuz theek aaye — sirf awaaz ke liye. Screen par Urdu hi rehta hai.
-_PRONOUNCE = [
-    ("ابن ابی قحافہ", "ابنِ اَبی قُحافَہ"),
-    ("ابو بکر صدیق", "اَبُو بَکْر صِدِّیق"),
-    ("ابی قحافہ", "اَبی قُحافہ"),
-    ("یا رسول اللہ", "یا رَسُولَ اللہ"),
-    ("رسول اللہ", "رَسُولَ اللہ"),
-    ("عمر بن خطاب", "عُمَر بِن خَطّاب"),
-    ("عثمان بن عفان", "عُثمان بِن عَفّان"),
-    ("علی بن ابی طالب", "عَلی بِن اَبی طالِب"),
-    ("صدیق", "صِدِّیق"),
-    ("فاروق", "فارُوق"),
-    ("رضی اللہ عنہم", "رَضِیَ اللہُ عَنہُم"),
-    ("رضی اللہ عنہما", "رَضِیَ اللہُ عَنہُما"),
-    ("رضی اللہ عنہا", "رَضِیَ اللہُ عَنہا"),
-    ("رضی اللہ عنہ", "رَضِیَ اللہُ عَنہُ"),
-    ("عبد اللہ", "عَبدُ اللہ"),
-    ("ابو بکر", "اَبُو بَکْر"),
-    ("ورثة الانبياء", "وَرَثَةُ الْاَنْبِیَاء"),
-    ("قرآن", "قُرْآن"),
-]
-
+# Talaffuz ki poori list `video_factory/talaffuz.py` me hai.
 # Aakhri line me "سبسکرائب" — beech wale cards se hata diya jata hai.
 _SUBSCRIBE = re.compile(r"[^۔]*سبسکرائب[^۔]*۔?")
-
-
-def _speak(text: str) -> str:
-    if not text:
-        return text
-    for urdu, arabic in _PRONOUNCE:
-        text = text.replace(urdu, arabic)
-    return text
 
 
 @dataclass
@@ -177,7 +149,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     # Pehla screen: intro + hook saath me bola jata hai.
     opening = " ".join(part for part in (intro, hook) if part)
     spoken_parts = [opening] + beats + [lesson, closing, outro]
-    narration = " ".join(part for part in spoken_parts if part)
+    narration = _speak(" ".join(part for part in spoken_parts if part))
 
     cards: List[Card] = [
         Card(

@@ -195,10 +195,25 @@ Instagram ka Reels API file leta hi nahi — video ka **public URL** chahiye
 - `PRIVACY` — `public` | `unlisted` | `private`
 - `DRY_RUN` — `yes` par sirf video banti hai
 
-### Roman (Hindi awaaz) mode
+### Talaffuz (awaaz me har lafz sahi)
 
-Urdu ki awaaz kai lafz galat bolti hai. Repo **Variable `VIDEO_LANG` = `hi`**
-kar dein:
+Urdu voice Arabic naam aur deeni istilah bina harakat ke aksar galat bolti hai
+("عمر" ko "amar", "قریش" ko "qaraish"). `video_factory/talaffuz.py` me aise
+~200 lafz ki **harakat wali shakl** hai, aur Urdu adad (13 → "تیرہ") bhi lafzon
+me badle jate hain. Ye sirf **awaaz** par lagta hai — screen par wahi Urdu
+rehti hai jo `stories.json` me hai.
+
+Koi lafz phir bhi galat bole to `content/talaffuz.json` me theek kar dein:
+
+    {"words": {"عمر": "عُمَر"}}
+
+Wahan ka entry hamesha andar wale lafz par bhaari padta hai. Theek karne ke
+baad `python -m video_factory.selftest` chala kar dekh sakte hain.
+
+### Roman (Hindi awaaz) mode — option
+
+Urdu default hai. Urdu awaaz kuch lafz phir bhi galat bole to `VIDEO_LANG = hi`
+se Roman likhai + Hindi awaaz wala mode chal jata hai:
 
 - narration wahi `content/stories.json` se aati hai, magar **Roman** me —
   Urdu harf → Latin harf (`video_factory/roman.py`). Koi naya matlab nahi
@@ -221,6 +236,7 @@ video_factory/
   config.py          env settings
   i18n.py            Urdu/Roman labels, dua, hashtags
   roman.py           Urdu → Roman (Hindi awaaz ke liye)
+  talaffuz.py        awaaz ke liye harakat wale lafz + Urdu adad
   stories.py         stories.json load + validate
   script_builder.py  narration + on-screen cards + title/description
   tts.py             edge-tts voiceover
@@ -233,6 +249,7 @@ video_factory/
   uploaders/         youtube.py, facebook.py, instagram.py
 content/
   stories.json       waqiyat + hawale
+  talaffuz.json      awaaz ke apne lafz (Urdu mode)
   roman.json         talaffuz ke apne lafz (Roman mode)
   SOURCES.md         nayi story jodne ka tareeqa
 assets/fonts/        Noto Naskh Arabic + Noto Sans (OFL)
