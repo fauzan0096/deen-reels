@@ -12,7 +12,6 @@ from typing import List, Optional
 
 from .config import Config
 from .roman import to_roman
-from .talaffuz import say as _speak
 
 SENTENCE_END = "۔"
 _ENDINGS = "۔.!?؟:؛"
@@ -36,7 +35,12 @@ def _honor_title(title: str) -> str:
     return f"{title} رضی اللہ عنہ" if title else title
 
 
-# Talaffuz ki poori list `video_factory/talaffuz.py` me hai.
+# Awaaz me bilkul wahi jata hai jo screen par likha hai. Koi lafz badla nahi
+# jata — jo likha ho wahi parha jaye, isi se talaffuz theek rehta hai.
+def _speak(text: str) -> str:
+    return text
+
+
 # Aakhri line me "سبسکرائب" — beech wale cards se hata diya jata hai.
 _SUBSCRIBE = re.compile(r"[^۔]*سبسکرائب[^۔]*۔?")
 

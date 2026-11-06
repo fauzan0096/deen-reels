@@ -199,20 +199,18 @@ Instagram ka Reels API file leta hi nahi — video ka **public URL** chahiye
 - `PRIVACY` — `public` | `unlisted` | `private`
 - `DRY_RUN` — `yes` par sirf video banti hai
 
-### Talaffuz (awaaz me har lafz sahi)
+### Awaaz — jo likha hai wahi bola jata hai
 
-Urdu voice Arabic naam aur deeni istilah bina harakat ke aksar galat bolti hai
-("عمر" ko "amar", "قریش" ko "qaraish"). `video_factory/talaffuz.py` me aise
-~200 lafz ki **harakat wali shakl** hai, aur Urdu adad (13 → "تیرہ") bhi lafzon
-me badle jate hain. Ye sirf **awaaz** par lagta hai — screen par wahi Urdu
-rehti hai jo `stories.json` me hai.
+Voiceover `content/stories.json` ka Urdu text **jaisa likha hai waisa hi**
+parhta hai. Koi lafz badla ya "theek" nahi kiya jata: pehle alag-lafz
+tabdeeliyan ki jati thin aur usi se talaffuz kharab ho raha tha, is liye wo
+poori tarah hata di gayi hain.
 
-Koi lafz phir bhi galat bole to `content/talaffuz.json` me theek kar dein:
+Sirf ek cheez badalti hai: `ﷺ` ko **صلی اللہ علیہ وسلم** likh diya jata hai
+(kyunke voice us nishan ko parh nahi sakti) — baqi sab harf-ba-harf wahi.
 
-    {"words": {"عمر": "عُمَر"}}
-
-Wahan ka entry hamesha andar wale lafz par bhaari padta hai. Theek karne ke
-baad `python -m video_factory.selftest` chala kar dekh sakte hain.
+Kisi lafz ka talaffuz theek karna ho to seedha `stories.json` me us lafz ki
+likhai badal dein; video wahi bolegi jo wahan likha hoga.
 
 ### Roman (Hindi awaaz) mode — option
 
@@ -240,7 +238,6 @@ video_factory/
   config.py          env settings
   i18n.py            Urdu/Roman labels, dua, hashtags
   roman.py           Urdu → Roman (Hindi awaaz ke liye)
-  talaffuz.py        awaaz ke liye harakat wale lafz + Urdu adad
   stories.py         stories.json load + validate
   script_builder.py  narration + on-screen cards + title/description
   tts.py             edge-tts voiceover
@@ -253,7 +250,6 @@ video_factory/
   uploaders/         youtube.py, facebook.py, instagram.py
 content/
   stories.json       waqiyat + hawale
-  talaffuz.json      awaaz ke apne lafz (Urdu mode)
   roman.json         talaffuz ke apne lafz (Roman mode)
   SOURCES.md         nayi story jodne ka tareeqa
 assets/fonts/        Noto Naskh Arabic + Noto Sans (OFL)
