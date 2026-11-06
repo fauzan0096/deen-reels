@@ -244,7 +244,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             card.footer = to_roman(card.footer)
             card.spoken = to_roman(card.spoken)
         narration = to_roman(narration)
-        title = to_roman(title)
+        title = to_roman(title)[:100]
         description = to_roman(description)
 
     return Script(
