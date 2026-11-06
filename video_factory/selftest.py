@@ -18,9 +18,11 @@ render shuru hone se pehle hi pakdi jati hai.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 import tempfile
+import traceback
 from collections import Counter
 from pathlib import Path
 
@@ -49,6 +51,9 @@ class Result:
     def fail(self, name: str, detail: str) -> None:
         self.failed += 1
         print(f"FAIL  {name} — {detail}")
+        # GitHub Actions par annotation bhi, taake run ke summary me wajah nazar aaye.
+        if os.environ.get("GITHUB_ACTIONS"):
+            print(f"::error title={name}::{detail}")
 
     def warn(self, name: str, detail: str) -> None:
         self.warned += 1
@@ -290,5 +295,16 @@ def _finish(out: Result) -> int:
     return 0
 
 
+def run() -> int:
+    try:
+        return main()
+    except Exception as exc:  # noqa: BLE001
+        print(f"ERROR: {exc}")
+        traceback.print_exc()
+        if os.environ.get("GITHUB_ACTIONS"):
+            print(f"::error title=selftest::{exc}")
+        return 1
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run())
