@@ -123,6 +123,9 @@ jobs:
           if [ -f out/thumbnail.jpg ]; then
             cp out/thumbnail.jpg site/thumbnail.jpg
           fi
+          if [ -f out/metadata.json ]; then
+            cp out/metadata.json site/latest.json
+          fi
           git -C site add -A
           git -C site -c user.name="deen-reels-bot" \
               -c user.email="actions@users.noreply.github.com" \
@@ -144,6 +147,10 @@ jobs:
           if [ -f out/thumbnail.jpg ]; then
             cp out/thumbnail.jpg thumbnail.jpg
             git add thumbnail.jpg
+          fi
+          if [ -f out/metadata.json ]; then
+            cp out/metadata.json latest.json
+            git add latest.json
           fi
           git add index.html
           if [ -f state.json ]; then

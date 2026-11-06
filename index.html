@@ -12,12 +12,14 @@
     video { width: 100%; max-width: 420px; border-radius: 14px; background: #000; }
     a { color: #e8d9a6; font-size: 16px; }
     p { margin: 0; font-size: 15px; opacity: .8; text-align: center; }
+    #meta { font-size: 13px; opacity: .6; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <video id="v" controls playsinline preload="metadata" poster="thumbnail.jpg" src="video.mp4"></video>
     <p>یہ سب سے نئی بنائی گئی ویڈیو ہے — روزانہ یہاں بدل جاتی ہے۔</p>
+    <p id="meta"></p>
     <a href="video.mp4" download>ڈاؤن لوڈ کریں</a>
   </div>
   <script>
@@ -26,6 +28,21 @@
       .then(r => {
         const stamp = r.headers.get('last-modified') || Date.now();
         document.getElementById('v').src = 'video.mp4?t=' + encodeURIComponent(stamp);
+      })
+      .catch(() => {});
+
+    // Kaun si zuban aur kitne second ki video hai — latest.json se.
+    fetch('latest.json')
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        if (!data) return;
+        const voice = String(data.voice || '');
+        const lang = voice.indexOf('hi-') === 0 ? 'Hindi' : 'Urdu';
+        const bits = [];
+        if (data.video_title) bits.push(data.video_title);
+        if (data.duration_seconds) bits.push(Math.round(data.duration_seconds) + 's');
+        bits.push(lang);
+        document.getElementById('meta').textContent = bits.join(' • ');
       })
       .catch(() => {});
   </script>
