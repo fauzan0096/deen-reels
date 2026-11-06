@@ -70,8 +70,9 @@ def upload(
     description: str,
     tags: List[str],
     cfg: Config,
+    thumbnail: Path | None = None,
 ) -> str:
-    """Video upload karta hai aur video id lautata hai."""
+    """Video upload karta hai (aur thumbnail lagata hai), video id lautata hai."""
     from googleapiclient.discovery import build
     from googleapiclient.errors import HttpError
     from googleapiclient.http import MediaFileUpload
@@ -111,4 +112,15 @@ def upload(
     video_id = (response or {}).get("id")
     if not video_id:
         raise RuntimeError("YouTube ne video id nahi di")
+
+    # Custom thumbnail — na lage to video phir bhi post rahegi.
+    if thumbnail is not None and Path(thumbnail).exists():
+        try:
+            service.thumbnails().set(
+                videoId=str(video_id),
+                media_body=MediaFileUpload(str(thumbnail), mimetype="image/jpeg"),
+            ).execute()
+        except Exception as exc:  # noqa: BLE001
+            print(f"Dhyan: YouTube thumbnail set nahi hui — {str(exc)[:200]}")
+
     return str(video_id)

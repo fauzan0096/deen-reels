@@ -29,6 +29,7 @@ from .i18n import LANGS, get_lang
 from .roman import URDU_RE, unknown_words
 from .script_builder import build_script
 from .stories import load_stories
+from .thumbnail import thumbnail_text
 from .visuals import IMAGE_SUFFIXES, build_captions
 
 PRIVACY = {"public", "unlisted", "private"}
@@ -137,6 +138,24 @@ def _check_script(story, cfg, out: Result) -> None:
             out.fail(f"Script ({code})", f"title {len(script.title)} characters ka hai")
             continue
         out.ok(f"Script ({code})", f"{len(script.cards)} card, {len(script.title)} char title")
+
+        hashtags = script.description.count("#")
+        if hashtags < 3:
+            out.warn(f"Hashtags ({code})", f"sirf {hashtags} hashtag — kam se kam 3 behtar")
+        elif hashtags > 15:
+            out.fail(f"Hashtags ({code})", f"{hashtags} hashtag — YouTube 15 se zyada ignore karta hai")
+        else:
+            out.ok(f"Hashtags ({code})", f"{hashtags} hashtag")
+
+        try:
+            payload = thumbnail_text(script, lang, cfg)
+        except Exception as exc:  # noqa: BLE001
+            out.fail(f"Thumbnail ({code})", str(exc))
+        else:
+            if "Dialogue:" in payload and "{font}" not in payload:
+                out.ok(f"Thumbnail ({code})", "ASS taiyar")
+            else:
+                out.fail(f"Thumbnail ({code})", "ASS khaali ya placeholder bacha")
 
         if not lang.get("roman"):
             continue

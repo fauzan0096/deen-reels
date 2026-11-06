@@ -134,6 +134,30 @@ def _pick_outro(lang: dict, ordinal: int) -> str:
     return lines[ordinal % len(lines)]
 
 
+# Har sahabi ke apne hashtag — YouTube/Instagram par topic saaf rahe.
+_SAHABI_HASHTAGS = (
+    ("abu-bakr", ["#AbuBakr", "#Siddiq"]),
+    ("umar", ["#Umar", "#Farooq"]),
+)
+
+
+def _hashtags(story: dict, lang: dict, ordinal: int) -> list:
+    """Bhasha ke hashtags + sahabi ka naam + hissa number (duplicate hata kar)."""
+    tags = list(lang.get("hashtags") or [])
+    story_id = str(story.get("id", "")).lower()
+    for prefix, extra in _SAHABI_HASHTAGS:
+        if story_id.startswith(prefix):
+            tags.extend(extra)
+            break
+    tags.append(f"#Part{ordinal + 1}")
+
+    unique: list = []
+    for tag in tags:
+        if tag and tag not in unique:
+            unique.append(tag)
+    return unique[:8]
+
+
 def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     hook = _sentence(_honorifics(story.get("hook") or story.get("subtitle")))
     beats = [_sentence(_honorifics(beat.get("urdu"))) for beat in story.get("beats", [])]
@@ -187,6 +211,7 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     if len(title) > 100:
         title = _safe_title(f"{story_title} #Shorts")[:100]
 
+    hashtags = _hashtags(story, lang, ordinal)
     description = "\n".join(
         [
             hook,
@@ -201,15 +226,14 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
             outro,
             cta,
             "",
-            " ".join(lang["hashtags"]),
+            " ".join(hashtags),
         ]
     ).strip()[:4900]
 
-    tags = list(lang["tags"]) + [
-        lang.get("header_text") or cfg.channel_name,
-        "seerah",
-        "sahaba",
-    ]
+    tags = list(lang["tags"])
+    tags += [tag.lstrip("#") for tag in hashtags[:4]]
+    tags += [lang.get("header_text") or cfg.channel_name, "seerah", "sahaba"]
+    tags = [tag for index, tag in enumerate(tags) if tag and tag not in tags[:index]]
 
     # Roman mode (VIDEO_LANG=hi): wahi text, sirf likhai Latin me — taake
     # Hindi awaaz usay theek parhe. Arabic asal (card.arabic) jaisa hai waisa

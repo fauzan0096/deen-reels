@@ -16,6 +16,14 @@ class RenderError(RuntimeError):
 
 VIDEO_SUFFIXES = {".mp4", ".mov", ".webm", ".m4v"}
 
+# Hook punch-in: shuru ke ~2 second me 1.0 → 1.05 halka zoom, phir wahin ruk
+# jata hai. `on` output frame number hai (30 fps par 60 = 2 second).
+_HOOK_ZOOM = (
+    ",zoompan=z='min(1+0.0008*on,1.05)':d=1"
+    ":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+    f":s={WIDTH}x{HEIGHT}:fps=30"
+)
+
 
 def _background_input(background: Path) -> list:
     """Image ho to loop karke, video ho to sirf ek baar chalta hai."""
@@ -191,6 +199,7 @@ def render(
     fonts_dir: Path,
     duration: Optional[float] = None,
     logo: Optional[Path] = None,
+    hook_zoom: bool = False,
 ) -> Path:
     ensure_tools()
     if duration is None:
@@ -205,6 +214,7 @@ def render(
     if Path(background).suffix.lower() in VIDEO_SUFFIXES:
         scale_crop += f",tpad=stop_mode=clone:stop_duration={max(1.0, duration) + 2:.1f}"
     subtitles = f"ass={captions}:fontsdir={fonts_dir}"
+    zoom = _HOOK_ZOOM if hook_zoom else ""
 
     command = ["ffmpeg", "-hide_banner", "-loglevel", "warning", "-y"]
 
@@ -220,7 +230,7 @@ def render(
                 f"[0:v]{scale_crop},format=yuv420p[bg];"
                 "[2:v]scale=250:-1[lg];"
                 "[bg][lg]overlay=x=W-w-55:y=70[ov];"
-                f"[ov]{subtitles},format=yuv420p[v]"
+                f"[ov]{subtitles},format=yuv420p{zoom}[v]"
             ),
             "-map",
             "[v]",
@@ -233,7 +243,7 @@ def render(
             "-i",
             str(audio),
             "-vf",
-            f"{scale_crop},format=yuv420p,{subtitles}",
+            f"{scale_crop},format=yuv420p,{subtitles}{zoom}",
         ]
 
     command += [
@@ -268,6 +278,19 @@ def render(
     ]
 
     completed = subprocess.run(command, capture_output=True, text=True)
+    if completed.returncode != 0 and hook_zoom:
+        # Kuch ffmpeg builds zoompan ke saath na chalein — bina zoom render.
+        print("Hook zoom ffmpeg par fail hua — bina zoom render kar rahe hain.")
+        return render(
+            background=background,
+            audio=audio,
+            captions=captions,
+            output=output,
+            fonts_dir=fonts_dir,
+            duration=duration,
+            logo=logo,
+            hook_zoom=False,
+        )
     if completed.returncode != 0:
         raise RenderError("ffmpeg fail hua:\n" + (completed.stderr or "")[-1500:])
     if not output.exists() or output.stat().st_size < 10_000:

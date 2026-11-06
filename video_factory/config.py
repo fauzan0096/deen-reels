@@ -50,6 +50,7 @@ class Config:
     dry_run: bool = False
     ambience: bool = True
     logo: bool = False
+    hook_zoom: bool = True
 
     youtube_client_id: str = ""
     youtube_client_secret: str = ""
@@ -104,6 +105,7 @@ def load_config() -> Config:
         dry_run=_env_bool("DRY_RUN", False),
         ambience=_env_bool("AMBIENCE", True),
         logo=_env_bool("LOGO", False),
+        hook_zoom=_env_bool("HOOK_ZOOM", True),
         youtube_client_id=_env("YOUTUBE_CLIENT_ID"),
         youtube_client_secret=_env("YOUTUBE_CLIENT_SECRET"),
         youtube_refresh_token=_env("YOUTUBE_REFRESH_TOKEN"),

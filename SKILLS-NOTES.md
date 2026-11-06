@@ -14,9 +14,14 @@ wo usool rakhe gaye jo is channel par lagte hain. Ye note wahi nichor hai.
 - **Koi static hold nahi:** video background chalta hai, aakhir me freeze hota
   hai (logo ke liye) — beech me rukta nahi.
 - **Hawala hamesha:** har video ke aakhir me kitab + hadees/panna.
-- **Thumbnail:** har hisse ka `thumbnail.jpg` video ke hook wale frame se banta
-  hai (`video_factory/batch.py` -> `make_thumbnail`). Gallery me poster ki
-  tarah aur release me alag file ki tarah milta hai.
+- **Thumbnail:** har video ka apna `thumbnail.jpg` (1280x720) — hook wale frame
+  par bara title aur channel ka naam (`video_factory/thumbnail.py`, libass se
+  likha jata hai taake Urdu/Arabic shaping theek rahe). Ek hi video par lagta
+  hai, site par poster banta hai, YouTube par custom thumbnail ki tarah jata
+  hai (`thumbnails.set`), aur hisse ke folder me alag file rehta hai.
+- **Hashtags aur description:** title + hook + beats + sabaq + hawala + dua,
+  aakhir me hashtags — bhasha ke hashtags, sahabi ka naam (`#AbuBakr`,
+  `#Umar`) aur hissa number (`#Part3`). YouTube ke tags bhi isi se bante hain.
 - **Nishan:** har video par channel + hissa number (`حصہ 3/14`).
 
 ## Nahi lagte (yahan matlab nahi)
@@ -31,7 +36,6 @@ wo usool rakhe gaye jo is channel par lagte hain. Ye note wahi nichor hai.
 
 ## Jo aage lag sakta hai
 
-- YouTube thumbnail upload (is ke liye `youtube.upload` scope me
-  `thumbnails.set` add karna padega).
-- Hook ke waqt halka punch-in (zoom 1.0 -> 1.05) — abhi background video chalta
-  hai, is liye chhoda nahi gaya.
+- Hook ke waqt punch-in: ab `HOOK_ZOOM` (default `yes`) se pehle ~2 second me
+  halka zoom (1.0 → 1.05) lagta hai; ffmpeg par na chale to pipeline khud bina
+  zoom render kar leti hai.

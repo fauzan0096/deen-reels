@@ -28,6 +28,7 @@ from .render import (
 from .script_builder import Script, build_script, source_line
 from .state import load, mark_posted, save
 from .stories import load_stories, next_story
+from .thumbnail import build_thumbnail
 from .tts import synthesize
 from .uploaders.base import UploadResult
 from .verify import check_video
@@ -147,7 +148,9 @@ def build_voiceover(cards, voice: str, out_dir: Path, rate: str, solemn_labels=N
     return output, timings, words, media_duration(output)
 
 
-def publish(cfg: Config, video_path: Path, script: Script) -> list:
+def publish(
+    cfg: Config, video_path: Path, script: Script, thumbnail: Path | None = None
+) -> list:
     results: list = []
 
     if cfg.dry_run:
@@ -159,7 +162,12 @@ def publish(cfg: Config, video_path: Path, script: Script) -> list:
             from .uploaders import youtube
 
             video_id = youtube.upload(
-                video_path, script.title, script.description, script.tags, cfg
+                video_path,
+                script.title,
+                script.description,
+                script.tags,
+                cfg,
+                thumbnail=thumbnail,
             )
             results.append(
                 UploadResult("youtube", True, f"https://youtu.be/{video_id}")
@@ -290,6 +298,7 @@ def render_story(
         fonts_dir=Path("assets") / "fonts",
         duration=duration,
         logo=logo_path,
+        hook_zoom=cfg.hook_zoom,
     )
     size_mb = video_path.stat().st_size / (1024 * 1024)
     log(f"Video taiyar: {video_path} ({size_mb:.1f} MB)")
@@ -303,8 +312,15 @@ def render_story(
         )
     log(f"Jaanch theek: {report.summary()}")
 
+    log("Thumbnail ban rahi hai...")
+    thumbnail_path = build_thumbnail(
+        video_path, script, lang, cfg, out_dir / "thumbnail.jpg"
+    )
+    log(f"Thumbnail taiyar: {thumbnail_path.name}")
+
     return {
         "video": video_path,
+        "thumbnail": thumbnail_path,
         "script": script,
         "duration": duration,
         "voice": voice,
@@ -335,11 +351,12 @@ def main() -> int:
     out_dir = cfg.out_dir
     info = render_story(cfg, lang, story, ordinal, len(stories), out_dir)
     video_path = info["video"]
+    thumbnail = info.get("thumbnail")
     script = info["script"]
     duration = info["duration"]
     voice = info["voice"]
 
-    results = publish(cfg, video_path, script)
+    results = publish(cfg, video_path, script, thumbnail)
 
     metadata = {
         "id": story["id"],
@@ -350,6 +367,7 @@ def main() -> int:
         "description": script.description,
         "tags": script.tags,
         "voice": voice,
+        "thumbnail": thumbnail.name if thumbnail else "",
         "duration_seconds": round(duration, 2),
         "uploads": [result.__dict__ for result in results],
     }

@@ -14,8 +14,10 @@ YouTube aur Facebook par apne aap post ho jata hai.
    darmiyan me chhota sa sukun, aur sanjeeda beat (وفات، ایک صفت، سبق) thori
    dheemi awaaz me (mahol banane ke liye).
 4. Har beat ka apna screen, aakhir me "سبق" aur hawala card.
-5. ffmpeg se mp4 (1080x1920, captions burned).
-6. YouTube / Facebook par upload, phir `state.json` update.
+5. ffmpeg se mp4 (1080x1920, captions burned) — shuru me halka hook punch-in.
+6. 1280x720 **thumbnail** (hook wala frame + bara title), phir YouTube/Facebook
+   par upload — YouTube par custom thumbnail bhi lagti hai. Us ke baad
+   `state.json` update.
 
 Video me jo bhi Arabic likha ya bola jata hai wo seedha `stories.json` se aata hai —
 koi AI us waqt kuch likhta nahi.
@@ -224,6 +226,7 @@ video_factory/
   tts.py             edge-tts voiceover
   visuals.py         background art + ASS captions
   render.py          ffmpeg
+  thumbnail.py       1280x720 thumbnail (hook frame + title)
   verify.py          publish se pehle video ki jaanch
   selftest.py        tez jaanch (CI)
   state.py           posted state

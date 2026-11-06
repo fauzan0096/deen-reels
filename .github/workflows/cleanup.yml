@@ -65,7 +65,7 @@ jobs:
           fi
           # Index page aur ek naya video rehne do, baaki sab (purane hisse) hata do.
           find site -mindepth 1 -maxdepth 1 \
-            ! -name .git ! -name index.html ! -name video.mp4 \
+            ! -name .git ! -name index.html ! -name video.mp4 ! -name thumbnail.jpg \
             -exec rm -rf {} +
           if git -C site diff --quiet && [ -z "$(git -C site status --porcelain)" ]; then
             echo "Kuch delete karne ko nahi mila."

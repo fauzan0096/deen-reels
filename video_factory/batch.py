@@ -278,9 +278,9 @@ def main() -> int:
             "duration_seconds": round(info["duration"], 2),
             "video_title": info["script"].title,
         }
-        # Thumbnail (hook ka frame) — gallery aur YouTube ke liye.
-        thumb = make_thumbnail(info["video"], folder / "thumbnail.jpg")
-        if thumb is not None:
+        # Thumbnail render_story hi bana deta hai — gallery me poster ke liye.
+        thumb = info.get("thumbnail")
+        if thumb is not None and Path(thumb).exists():
             item["poster"] = f"{folder.name}/thumbnail.jpg"
         (folder / "metadata.json").write_text(
             json.dumps(item, ensure_ascii=False, indent=2), encoding="utf-8"

@@ -113,6 +113,9 @@ jobs:
           find site -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
           cp preview/index.html site/index.html
           cp out/video.mp4 site/video.mp4
+          if [ -f out/thumbnail.jpg ]; then
+            cp out/thumbnail.jpg site/thumbnail.jpg
+          fi
           git -C site add -A
           git -C site -c user.name="deen-reels-bot" \
               -c user.email="actions@users.noreply.github.com" \
@@ -130,6 +133,10 @@ jobs:
           if [ -f out/video.mp4 ]; then
             cp out/video.mp4 video.mp4
             git add video.mp4
+          fi
+          if [ -f out/thumbnail.jpg ]; then
+            cp out/thumbnail.jpg thumbnail.jpg
+            git add thumbnail.jpg
           fi
           git add index.html
           if [ -f state.json ]; then
