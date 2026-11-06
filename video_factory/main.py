@@ -59,12 +59,14 @@ def _rate_with(rate: str, delta: int) -> str:
     return f"{base + delta:+d}%"
 
 
-def build_voiceover(cards, voice: str, out_dir: Path, rate: str):
+def build_voiceover(cards, voice: str, out_dir: Path, rate: str, solemn_labels=None):
     """Har card ki alag awaaz, darmiyan me saans ka waqfa.
 
     Isi se "mahol" banta hai: jumla khatam, chhota sa sukun, phir agla jumla.
-    Sanjeeda beat (وفات، ایک صفت، سبق) thori dheemi boli jati hai.
+    Sanjeeda beat (وفات، ایک صفت، سبق) thori dheemi boli jati hai — label
+    usi bhasha ka hona chahiye jo screen par hai (Urdu ya Roman).
     """
+    solemn = set(SOLEMN_LABELS) if solemn_labels is None else set(solemn_labels)
     work = out_dir / "voice_parts"
     work.mkdir(parents=True, exist_ok=True)
     files: list = []
@@ -95,7 +97,7 @@ def build_voiceover(cards, voice: str, out_dir: Path, rate: str):
             timings.append((cursor, cursor))
             continue
 
-        delta = -6 if (card.label or "") in SOLEMN_LABELS else 0
+        delta = -6 if (card.label or "") in solemn else 0
         mp3 = work / f"card{index:02d}.mp3"
         wav = work / f"card{index:02d}.wav"
         transcript = synthesize(text, voice, mp3, _rate_with(rate, delta))
@@ -220,7 +222,7 @@ def render_story(
     words: list = []
     try:
         audio_path, timings, words, duration = build_voiceover(
-            script.cards, voice, out_dir, cfg.tts_rate
+            script.cards, voice, out_dir, cfg.tts_rate, lang.get("solemn_labels")
         )
     except Exception as exc:  # noqa: BLE001
         # Kuch bhi ho jaye, purana tareeqa (pooora narration ek saath).
@@ -256,18 +258,24 @@ def render_story(
         log(f"Apna background use ho raha hai: {pictures[0].name}")
     else:
         make_background(background_path)
+    header_text = lang.get("header_text") or cfg.channel_name
+    sign_template = lang.get("sign_template") or "{channel} • حصہ {n}/{total}"
+    sign_text = sign_template.format(
+        channel=header_text, n=ordinal + 1, total=total
+    )
     if not timings:
         timings = card_timings(script.cards, words, duration)
     build_captions(
         script.cards,
         duration,
         captions_path,
-        header_text=cfg.channel_name,
+        header_text=header_text,
         title=script.title,
         timings=timings,
         words=words,
         source_text=source_line(story),
-        sign_text=f"{cfg.channel_name} • حصہ {ordinal + 1}/{total}",
+        sign_text=sign_text,
+        text_font=lang.get("text_font") or "Noto Naskh Arabic",
     )
     logo_path = ensure_logo(Path("assets") / "logo.png") if cfg.logo else None
 

@@ -45,6 +45,7 @@ jobs:
         env:
           CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          VOICE: ${{ vars.VOICE }}
           DRY_RUN: "yes"
         run: |
           set +e

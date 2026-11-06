@@ -166,11 +166,32 @@ Instagram ka Reels API file leta hi nahi — video ka **public URL** chahiye
 `.env` (local) ya GitHub me Secret/Variable:
 
 - `CHANNEL_NAME` — video par dikhne wala naam
-- `VIDEO_LANG` — filhaal sirf `ur`
-- `VOICE` — `ur-PK-AsadNeural` (default) ya `ur-PK-UzmaNeural` (female)
+- `VIDEO_LANG` — `ur` (Urdu likhai + Urdu awaaz) ya `hi` (Roman likhai +
+  Hindi awaaz — neeche dekhiye)
+- `VOICE` — `ur-PK-AsadNeural` (default) ya `ur-PK-UzmaNeural` (female);
+  `hi` par `hi-IN-MadhurNeural` / `hi-IN-SwaraNeural`
 - `TTS_RATE` — raftaar, jaise `+5%` / `-5%`
 - `PRIVACY` — `public` | `unlisted` | `private`
 - `DRY_RUN` — `yes` par sirf video banti hai
+
+### Roman (Hindi awaaz) mode
+
+Urdu ki awaaz kai lafz galat bolti hai. Repo **Variable `VIDEO_LANG` = `hi`**
+kar dein:
+
+- narration wahi `content/stories.json` se aati hai, magar **Roman** me —
+  Urdu harf → Latin harf (`video_factory/roman.py`). Koi naya matlab nahi
+  jodta, sirf likhai badalti hai.
+- awaaz `hi-IN-MadhurNeural` — Hindi voice Roman lafz theek parhti hai.
+- screen ke captions bhi Roman, **Noto Sans** font se.
+- **Arabic asal** (aayat/hadees ka quote) jaisa hai waisa hi rehta hai,
+  Naskh font me — wo kabhi Roman nahi hota.
+
+Kisi lafz ka talaffuz galat lage to `content/roman.json` me theek kar dein:
+
+    {"words": {"ابو بکر": "Abu Bakr"}, "phrases": {"حصہ": "hissa"}}
+
+Wahan ka entry hamesha `roman.py` ke andar wale lafz par bhaari padta hai.
 
 ## File structure
 

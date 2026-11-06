@@ -1,7 +1,9 @@
 """Bhasha ka pack: awaaz, labels, hashtags.
 
-Filhaal sirf Urdu support hai. Naya language add karna ho to yahan ek
-entry jodiye — key wahi rakhni hai jo `VIDEO_LANG` me di jayegi.
+Do pack hain: `ur` (Urdu likhai + Urdu awaaz) aur `hi` (Roman likhai +
+Hindi awaaz — Urdu voice kai lafz galat bolti hai). Naya language add karna
+ho to yahan ek entry jodiye — key wahi rakhni hai jo `VIDEO_LANG` me di
+jayegi.
 """
 
 from __future__ import annotations
@@ -49,7 +51,63 @@ URDU = {
     ],
 }
 
-LANGS = {"ur": URDU}
+# Roman likhai + Hindi awaaz. `roman` True ka matlab: narration aur captions
+# `video_factory/roman.py` se Roman me badle jayenge, aur awaaz hi-IN hogi.
+# Screen ke text ke liye Noto Sans (Latin) font — Arabic asal Naskh me hi rehta hai.
+HI_ROMAN = {
+    "name": "Hindi (Roman)",
+    "roman": True,
+    "voice": "hi-IN-MadhurNeural",
+    "female_voice": "hi-IN-SwaraNeural",
+    "header_text": "Warasat-ul-Ambiya",
+    "channel_spoken": "Warasat ul Ambiya",
+    "text_font": "Noto Sans",
+    "next_lines": [
+        "Agle hisse mein is waqiye ka baaki hissa hai — channel subscribe kar "
+        "lein taake kuch chhoot na jaye.",
+        "Kahani abhi khatam nahi hui — agla hissa dekhne ke liye subscribe "
+        "kar lein.",
+    ],
+    "label_story": "Sahaba ki seerat",
+    "label_lesson": "Sabaq",
+    "label_source": "Hawala",
+    "intro_template": "{channel} mein khush aamdeed. Aaj ka waqia tawajjuh se sunein.",
+    "outro_lines": [
+        "Agar video pasand aayi ho to Like karein, Share karein aur Subscribe kar lein.",
+        "Aisi hi baatein roz milti hain. Like, Share aur Subscribe zaroor karein.",
+        "In buzurgon ki seerat se sabaq lein, aur channel ko Subscribe kar lein.",
+    ],
+    "closing": "Allah hum sab ko in buzurgon ki seerat par chalne ki taufeeq de. Aameen.",
+    "cta": "Like • Share • Subscribe",
+    "daily_line": "Rozana ek sahabi ka waqia, mustanad hawale ke saath.",
+    "hashtags": [
+        "#Shorts",
+        "#Sahaba",
+        "#Seerat",
+        "#Seerah",
+        "#DeenReels",
+        "#IslamicShorts",
+    ],
+    "tags": [
+        "seerah",
+        "sahaba stories",
+        "islamic history",
+        "hindi islamic video",
+        "sahaba",
+    ],
+    # Sanjeeda beat — awaaz thori dheemi. Naam wahi jo label Roman me banta hai.
+    "solemn_labels": {
+        "ek sifat",
+        "wafaat",
+        "dafan",
+        "shahadat",
+        "sabaq",
+        "Sabaq",
+    },
+    "sign_template": "{channel} • Hissa {n}/{total}",
+}
+
+LANGS = {"ur": URDU, "hi": HI_ROMAN}
 
 
 def get_lang(code: str) -> dict:

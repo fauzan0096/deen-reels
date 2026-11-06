@@ -31,14 +31,14 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Header,Noto Naskh Arabic,32,&HCCFFFFFF,&H00FFFFFF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,7,55,55,0,1
-Style: Label,Noto Naskh Arabic,36,&H99E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,5,50,50,0,1
-Style: Title,Noto Naskh Arabic,84,&H00FFFFFF,&H00808080,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,4,3,5,50,50,0,1
+Style: Header,{font},32,&HCCFFFFFF,&H00FFFFFF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,7,55,55,0,1
+Style: Label,{font},36,&H99E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,5,50,50,0,1
+Style: Title,{font},84,&H00FFFFFF,&H00808080,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,4,3,5,50,50,0,1
 Style: Arabic,Noto Naskh Arabic,56,&H00F5E9D0,&H000000FF,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
-Style: Body,Noto Naskh Arabic,62,&H00FFFFFF,&H008A8A8A,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
-Style: Sub,Noto Naskh Arabic,44,&HCCE6EEF2,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,0,0,1,2,1,5,50,50,0,1
-Style: Footer,Noto Naskh Arabic,38,&H00A6D9E8,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
-Style: Sign,Noto Naskh Arabic,30,&H80E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,1,0,3,50,50,0,1
+Style: Body,{font},62,&H00FFFFFF,&H008A8A8A,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
+Style: Sub,{font},44,&HCCE6EEF2,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,0,0,1,2,1,5,50,50,0,1
+Style: Footer,{font},38,&H00A6D9E8,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
+Style: Sign,{font},30,&H80E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,1,0,3,50,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -479,6 +479,7 @@ def build_captions(
     words: Optional[Sequence[Tuple[float, float]]] = None,
     source_text: str = "",
     sign_text: str = "",
+    text_font: str = "Noto Naskh Arabic",
 ) -> Path:
     total_cs = max(1, int(round(duration * 100)))
 
@@ -555,6 +556,10 @@ def build_captions(
             )
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = ASS_HEADER.format(title=_clean(title)) + "\n".join(events) + "\n"
+    payload = (
+        ASS_HEADER.format(title=_clean(title), font=text_font)
+        + "\n".join(events)
+        + "\n"
+    )
     path.write_text(payload, encoding="utf-8")
     return path

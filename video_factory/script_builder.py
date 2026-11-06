@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 from .config import Config
+from .roman import to_roman
 
 SENTENCE_END = "۔"
 _ENDINGS = "۔.!?؟:؛"
@@ -180,7 +181,9 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
         cards.append(Card(text=next_hint, spoken=_speak(next_hint)))
     cards.append(Card(text=outro, sub=cta, footer=citation, spoken=_speak(outro)))
 
-    title = _safe_title(f"{story_title} | {cfg.channel_name} #Shorts")
+    title = _safe_title(
+        f"{story_title} | {lang.get('header_text') or cfg.channel_name} #Shorts"
+    )
     if len(title) > 100:
         title = _safe_title(f"{story_title} #Shorts")[:100]
 
@@ -202,7 +205,25 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
         ]
     ).strip()[:4900]
 
-    tags = list(lang["tags"]) + [cfg.channel_name, "seerah", "sahaba"]
+    tags = list(lang["tags"]) + [
+        lang.get("header_text") or cfg.channel_name,
+        "seerah",
+        "sahaba",
+    ]
+
+    # Roman mode (VIDEO_LANG=hi): wahi text, sirf likhai Latin me — taake
+    # Hindi awaaz usay theek parhe. Arabic asal (card.arabic) jaisa hai waisa
+    # hi rehta hai, wo kabhi Roman nahi hota.
+    if lang.get("roman"):
+        for card in cards:
+            card.text = to_roman(card.text)
+            card.sub = to_roman(card.sub)
+            card.label = to_roman(card.label)
+            card.footer = to_roman(card.footer)
+            card.spoken = to_roman(card.spoken)
+        narration = to_roman(narration)
+        title = to_roman(title)
+        description = to_roman(description)
 
     return Script(
         narration=narration,

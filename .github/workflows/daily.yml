@@ -51,6 +51,8 @@ jobs:
         env:
           CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
           VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          VOICE: ${{ vars.VOICE }}
+          TTS_RATE: ${{ vars.TTS_RATE || '+0%' }}
           PRIVACY: ${{ vars.PRIVACY || 'public' }}
           # Manual run: dry_run tick chalti hai. Code push: hamesha sirf preview.
           # Rozana (schedule): repo Variable DRY_RUN — jab tak "yes" hai, kuch
