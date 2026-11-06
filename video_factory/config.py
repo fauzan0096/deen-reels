@@ -45,7 +45,7 @@ class Config:
     channel_name: str = "ورثة الانبياء"
     lang: str = "ur"
     voice: str = ""
-    tts_rate: str = "+0%"
+    tts_rate: str = "+5%"
     privacy: str = "public"
     dry_run: bool = False
     ambience: bool = True
@@ -100,7 +100,7 @@ def load_config() -> Config:
         channel_name=_env("CHANNEL_NAME", "ورثة الانبياء"),
         lang=_env("VIDEO_LANG", "ur").lower(),
         voice=_env("VOICE", ""),
-        tts_rate=_env("TTS_RATE", "+0%"),
+        tts_rate=_env("TTS_RATE", "+5%"),
         privacy=_env("PRIVACY", "public").lower(),
         dry_run=_env_bool("DRY_RUN", False),
         ambience=_env_bool("AMBIENCE", True),

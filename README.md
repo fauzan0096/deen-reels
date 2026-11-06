@@ -9,13 +9,17 @@ YouTube aur Facebook par apne aap post ho jata hai.
 ## Ek video kaise banti hai
 
 1. `content/stories.json` se agla waqiya uthata hai (jo pehle post nahi hua).
-2. Story ke `beats` — Urdu narration, har beat ke saath Arabic asal (jahan maujood ho).
-3. `edge-tts` (Microsoft ki free voice) se Urdu voiceover — **har jumla alag**,
-   darmiyan me chhota sa sukun, aur sanjeeda beat (وفات، ایک صفت، سبق) thori
-   dheemi awaaz me (mahol banane ke liye).
-4. Har beat ka apna screen, aakhir me "سبق" aur hawala card.
-5. ffmpeg se mp4 (1080x1920, captions burned) — shuru me halka hook punch-in.
-6. 1280x720 **thumbnail** (hook wala frame + bara title), phir YouTube/Facebook
+2. **Hook sab se pehle** — video ka pehla screen aur pehli awaaz wahi hairat
+   wali line (`hook`) hoti hai; "khush aamdeed" wali intro hata di gayi hai,
+   kyunke wo pehle 3 second kha jati thi. Title bhi hook se banta hai.
+3. Story ke `beats` — Urdu narration, har beat ke saath Arabic asal (jahan maujood ho).
+   Har beat chhote jumlon me toota jata hai, taake screen par text jaldi badle.
+4. `edge-tts` (Microsoft ki free voice) se Urdu voiceover — **har jumla alag**,
+   darmiyan me chhota sa sukun, sanjeeda beat (وفات، ایک صفت، سبق) thori dheemi,
+   aur `+5%` raftaar (Shorts ke liye).
+5. Har beat ka apna screen, aakhir me "سبق" aur hawala card.
+6. ffmpeg se mp4 (1080x1920, captions burned) — shuru me halka hook punch-in.
+7. 1280x720 **thumbnail** (hook wala frame + bara title), phir YouTube/Facebook
    par upload — YouTube par custom thumbnail bhi lagti hai. Us ke baad
    `state.json` update.
 

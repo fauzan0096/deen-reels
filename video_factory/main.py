@@ -118,7 +118,7 @@ def build_voiceover(cards, voice: str, out_dir: Path, rate: str, solemn_labels=N
         files.append(wav)
 
         if index < len(cards) - 1:
-            gap = 1.0 if index >= len(cards) - 2 else 0.45
+            gap = 1.0 if index >= len(cards) - 2 else 0.3
             files.append(silence(gap))
             cursor += dur + gap
         else:

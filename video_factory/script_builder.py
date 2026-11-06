@@ -130,6 +130,42 @@ def _hashtags(story: dict, lang: dict, ordinal: int) -> list:
     return unique[:8]
 
 
+def _pieces(text: str, minimum: int = 70) -> List[str]:
+    """Beat ko chhote jumlon me todta hai.
+
+    Shorts me screen par text jaldi badalna chahiye — ek hi lambe card par
+    20 second tak rukna log scroll kar dete hain.
+    """
+    text = (text or "").strip()
+    if not text:
+        return []
+
+    chunks = [part.strip() for part in re.split(r"(?<=۔)", text) if part.strip()]
+    pieces: List[str] = []
+    current = ""
+    for chunk in chunks:
+        if chunk and len(chunk) < minimum and not current:
+            current = chunk
+        elif current and len(current) < minimum:
+            current = f"{current} {chunk}"
+        else:
+            if current:
+                pieces.append(current)
+            current = chunk
+    if current:
+        pieces.append(current)
+    return pieces
+
+
+def _title(hook: str, story_title: str) -> str:
+    """Title me hook — story ka naam nahi. Hook hi click karata hai."""
+    for head in (hook, story_title):
+        text = _safe_title(f"{head} #Shorts")
+        if len(text) <= 100:
+            return text
+    return _safe_title(f"{story_title} #Shorts")[:100]
+
+
 def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     hook = _sentence(_honorifics(story.get("hook") or story.get("subtitle")))
     beats = [_sentence(_honorifics(beat.get("urdu"))) for beat in story.get("beats", [])]
@@ -139,36 +175,28 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
     citation = source_line(story)
     story_title = _honor_title(story["title"])
 
-    intro = _sentence(
-        lang["intro_template"].format(
-            channel=lang.get("channel_spoken") or cfg.channel_name
-        )
-    )
     outro = _sentence(_pick_outro(lang, ordinal))
 
-    # Pehla screen: intro + hook saath me bola jata hai.
-    opening = " ".join(part for part in (intro, hook) if part)
-    spoken_parts = [opening] + beats + [lesson, closing, outro]
-    narration = _speak(" ".join(part for part in spoken_parts if part))
-
+    # Hook sab se pehle — shuru ke 3 second me asli baat. "Khush aamdeed"
+    # wali intro hata di gayi hai: wo pehle 3 second kha jati thi.
     cards: List[Card] = [
         Card(
-            text=story_title,
-            sub=hook,
+            text=hook or story_title,
+            sub=story_title,
             label=lang["label_story"],
-            spoken=_speak(opening or story_title),
+            spoken=_speak(hook or story_title),
         )
     ]
     for beat in story.get("beats", []):
-        body = _sentence(beat.get("urdu"))
-        cards.append(
-            Card(
-                text=body,
-                arabic=beat.get("arabic", ""),
-                label=beat.get("label", ""),
-                spoken=_speak(body),
+        for index, piece in enumerate(_pieces(beat.get("urdu"))):
+            cards.append(
+                Card(
+                    text=piece,
+                    arabic=beat.get("arabic", "") if index == 0 else "",
+                    label=beat.get("label", "") if index == 0 else "",
+                    spoken=_speak(piece),
+                )
             )
-        )
     cards.append(Card(text=lesson, label=lang["label_lesson"], spoken=_speak(lesson)))
     cards.append(Card(text=closing, spoken=_speak(closing)))
     # Beech ke cards par subscribe ki baat nahi — wo sirf aakhri line me.
@@ -177,11 +205,9 @@ def build_script(story: dict, lang: dict, cfg: Config, ordinal: int) -> Script:
         cards.append(Card(text=next_hint, spoken=_speak(next_hint)))
     cards.append(Card(text=outro, sub=cta, footer=citation, spoken=_speak(outro)))
 
-    title = _safe_title(
-        f"{story_title} | {lang.get('header_text') or cfg.channel_name} #Shorts"
-    )
-    if len(title) > 100:
-        title = _safe_title(f"{story_title} #Shorts")[:100]
+    narration = " ".join(card.spoken for card in cards if card.spoken)
+
+    title = _title(hook, story_title)
 
     hashtags = _hashtags(story, lang, ordinal)
     description = "\n".join(
