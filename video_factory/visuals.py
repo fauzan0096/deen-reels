@@ -34,11 +34,12 @@ Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour,
 Style: Header,{font},32,&HCCFFFFFF,&H00FFFFFF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,7,55,55,0,1
 Style: Label,{font},36,&H99E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,2,0,1,2,1,5,50,50,0,1
 Style: Title,{font},84,&H00FFFFFF,&H00808080,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,4,3,5,50,50,0,1
-Style: Arabic,Noto Naskh Arabic,56,&H00F5E9D0,&H000000FF,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
+Style: Arabic,Noto Naskh Arabic,58,&H00F5E9D0,&H000000FF,&H00120F0A,&HB0000000,0,0,0,0,100,100,0,0,1,4,3,5,50,50,0,1
 Style: Body,{font},62,&H00FFFFFF,&H008A8A8A,&H00120F0A,&H96000000,0,0,0,0,100,100,0,0,1,3,2,5,50,50,0,1
 Style: Sub,{font},44,&HCCE6EEF2,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,0,0,1,2,1,5,50,50,0,1
 Style: Footer,{font},38,&H00A6D9E8,&H008A8A8A,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,2,1,5,50,50,0,1
 Style: Sign,{font},30,&H80E6EEF2,&H000000FF,&H00120F0A,&H00000000,0,0,0,0,100,100,1,0,1,1,0,3,50,50,0,1
+Style: Panel,{font},20,&H9E000000,&H00000000,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -480,6 +481,7 @@ def build_captions(
     source_text: str = "",
     sign_text: str = "",
     text_font: str = "Noto Naskh Arabic",
+    panel: bool = True,
 ) -> Path:
     total_cs = max(1, int(round(duration * 100)))
 
@@ -511,6 +513,19 @@ def build_captions(
             f"{{\\an7\\pos(55,95)}}{_wrap(_clean(header_text), 34)}",
         )
     ]
+
+    # Text ke peeche halka parda (ASS drawing) — apni video background par bhi
+    # likhai saaf parhi jaye. Sab se pehle draw hota hai, is liye sab ke neeche.
+    if panel:
+        events.insert(
+            0,
+            _dialogue(
+                0,
+                total_cs,
+                "Panel",
+                "{\\an7\\pos(0,0)\\p1}m 60 470 l 1020 470 1020 1450 60 1450",
+            ),
+        )
 
     # Har video par nishan: neeche daayein taraf channel ka naam aur hissa number.
     if sign_text:
