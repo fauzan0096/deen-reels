@@ -124,12 +124,20 @@ jobs:
         run: |
           git config user.name "deen-reels-bot"
           git config user.email "actions@users.noreply.github.com"
+          # Site main branch ke root se chalti hai — wahan sirf yahi nayi video
+          # aur uska player page rakh do; purani video overwrite ho jati hai.
+          cp preview/index.html index.html
+          if [ -f out/video.mp4 ]; then
+            cp out/video.mp4 video.mp4
+            git add video.mp4
+          fi
+          git add index.html
           if [ -f state.json ]; then
             git add state.json
           fi
           if git diff --cached --quiet; then
             echo "Kuch commit karne ko nahi."
           else
-            git commit -m "chore: update posting state"
+            git commit -m "chore: publish the newest video"
             git push || echo "State push skip."
           fi

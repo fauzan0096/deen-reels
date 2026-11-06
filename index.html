@@ -1,110 +1,33 @@
 <!doctype html>
-<html lang="ur" dir="rtl">
+<html lang="ur">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ویڈیوز — ورثة الانبياء</title>
-<style>
-  body { margin: 0; background: #0b1220; color: #e8d9a6;
-    font-family: -apple-system, "Noto Naskh Arabic", sans-serif; }
-  header { padding: 26px 16px 6px; text-align: center; }
-  h1 { font-size: 20px; margin: 0 0 6px; }
-  p { margin: 0; font-size: 13px; opacity: .75; text-align: center; }
-  main { max-width: 460px; margin: 0 auto; padding: 16px 14px 48px; }
-  .card { background: #111c31; border-radius: 16px; padding: 12px;
-    margin-bottom: 22px; }
-  h2 { font-size: 15px; margin: 0 0 8px; }
-  video { width: 100%; border-radius: 12px; background: #000; }
-  a { color: #e8d9a6; font-size: 13px; }
-  .empty { padding: 30px 10px; font-size: 14px; opacity: .8; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نيا ویڈیو — ورثة الانبياء</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0b1220; color: #e8d9a6;
+      font-family: -apple-system, "Noto Naskh Arabic", sans-serif; }
+    .wrap { display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100%; padding: 16px; gap: 14px; }
+    video { width: 100%; max-width: 420px; border-radius: 14px; background: #000; }
+    a { color: #e8d9a6; font-size: 16px; }
+    p { margin: 0; font-size: 15px; opacity: .8; text-align: center; }
+  </style>
 </head>
 <body>
-<header>
-  <h1>ویڈیوز</h1>
-  <p>ورثة الانبياء — یہیں چلا کر دیکھیں</p>
-</header>
-<main id="list">
-  <p class="empty">لوڈ ہو رہی ہیں…</p>
-</main>
-<script>
-  const REPO = "fauzan0096/deen-reels";
-  const TREE = "https://api.github.com/repos/" + REPO + "/git/trees/gh-pages?recursive=1";
-  const RAW = "https://raw.githubusercontent.com/" + REPO + "/gh-pages/";
-
-  function makeCard(src, title) {
-    const wrap = document.createElement("section");
-    wrap.className = "card";
-    const h = document.createElement("h2");
-    h.textContent = title;
-    const v = document.createElement("video");
-    v.controls = true;
-    v.playsInline = true;
-    v.setAttribute("webkit-playsinline", "");
-    v.setAttribute("preload", "metadata");
-    v.src = src;
-    const link = document.createElement("a");
-    link.href = src;
-    link.target = "_blank";
-    link.textContent = "نئی ونڈو میں کھولیں";
-    wrap.append(h, v, link);
-    return wrap;
-  }
-
-  function pretty(path) {
-    const parts = path.split("/").filter(Boolean);
-    const name = parts.length > 1 ? parts[parts.length - 2] : path;
-    return name.replace(/-/g, " ");
-  }
-
-  async function exists(url) {
-    try {
-      const res = await fetch(url, { method: "HEAD" });
-      return res.ok;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  async function load() {
-    const list = document.getElementById("list");
-    list.innerHTML = "";
-    let count = 0;
-
-    // 1) Site par rakhi hui taaza video (same origin — phone par bhi chalti hai)
-    for (const name of ["video.mp4", "sample.mp4"]) {
-      if (await exists(name)) {
-        list.appendChild(makeCard(name, "تازہ ویڈیو (نئی آواز)"));
-        count++;
-        break;
-      }
-    }
-
-    // 2) Baqi hisse gh-pages ki gallery se
-    try {
-      const res = await fetch(TREE);
-      const data = await res.json();
-      const paths = (data.tree || [])
-        .filter(i => i.type === "blob" && /^all\/[^/]+\/video\.mp4$/.test(i.path))
-        .map(i => i.path)
-        .sort();
-      for (const path of paths) {
-        list.appendChild(makeCard(RAW + path, pretty(path)));
-        count++;
-      }
-    } catch (e) {
-      /* ignore */
-    }
-
-    if (!count) {
-      const p = document.createElement("p");
-      p.className = "empty";
-      p.textContent = "ابھی کوئی ویڈیو نہیں ملی — دوبارہ کوشش کریں۔";
-      list.appendChild(p);
-    }
-  }
-
-  load();
-</script>
+  <div class="wrap">
+    <video id="v" controls playsinline preload="metadata" src="video.mp4"></video>
+    <p>یہ سب سے نئی بنائی گئی ویڈیو ہے — روزانہ یہاں بدل جاتی ہے۔</p>
+    <a href="video.mp4" download>ڈاؤن لوڈ کریں</a>
+  </div>
+  <script>
+    // Har baar naya video aaye, browser cache purana na dikhaye.
+    fetch('video.mp4', { method: 'HEAD' })
+      .then(r => {
+        const stamp = r.headers.get('last-modified') || Date.now();
+        document.getElementById('v').src = 'video.mp4?t=' + encodeURIComponent(stamp);
+      })
+      .catch(() => {});
+  </script>
 </body>
 </html>
