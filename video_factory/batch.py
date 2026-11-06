@@ -31,15 +31,15 @@ from .stories import load_stories
 STORIES_PATH = ROOT / "content" / "stories.json"
 
 STYLE = """
-  body { margin: 0; background: #0b1220; color: #e8d9a6;
-    font-family: -apple-system, "Noto Naskh Arabic", sans-serif; }
-  a { color: #e8d9a6; }
-  h1 { font-size: 19px; margin: 0 0 6px; text-align: center; }
-  p { margin: 0; font-size: 13px; opacity: .8; text-align: center; }
-  video { width: 100%; border-radius: 12px; background: #000; }
-  .dl { display: inline-block; background: #e8d9a6; color: #0b1220;
+  body {{ margin: 0; background: #0b1220; color: #e8d9a6;
+    font-family: -apple-system, "Noto Naskh Arabic", sans-serif; }}
+  a {{ color: #e8d9a6; }}
+  h1 {{ font-size: 19px; margin: 0 0 6px; text-align: center; }}
+  p {{ margin: 0; font-size: 13px; opacity: .8; text-align: center; }}
+  video {{ width: 100%; border-radius: 12px; background: #000; }}
+  .dl {{ display: inline-block; background: #e8d9a6; color: #0b1220;
     padding: 13px 22px; border-radius: 999px; font-size: 16px;
-    font-weight: 600; text-decoration: none; }
+    font-weight: 600; text-decoration: none; }}
 """
 
 GALLERY = """<!doctype html>
@@ -50,19 +50,19 @@ GALLERY = """<!doctype html>
 <title>سارے حصے — ورثة الانبياء</title>
 <style>
 """ + STYLE + """
-  header { padding: 26px 16px 8px; text-align: center; }
-  header p { font-size: 13px; opacity: .7; }
-  .grid { display: grid; gap: 22px; padding: 18px 16px 40px;
-    max-width: 460px; margin: 0 auto; }
-  .card { background: #111c31; border-radius: 16px; padding: 14px; }
-  h2 { font-size: 17px; margin: 0 0 4px; text-align: right; }
-  .sub { margin: 0 0 10px; font-size: 13px; opacity: .75; text-align: right; }
-  .hawala { margin: 10px 0 12px; font-size: 13px; opacity: .85;
-    text-align: right; }
-  .row { display: flex; gap: 10px; align-items: center; }
-  .open { background: #1c2b45; color: #e8d9a6; border-radius: 999px;
-    padding: 10px 16px; font-size: 14px; text-decoration: none; }
-  .top { display: flex; justify-content: center; gap: 16px; margin-bottom: 6px; }
+  header {{ padding: 26px 16px 8px; text-align: center; }}
+  header p {{ font-size: 13px; opacity: .7; }}
+  .grid {{ display: grid; gap: 22px; padding: 18px 16px 40px;
+    max-width: 460px; margin: 0 auto; }}
+  .card {{ background: #111c31; border-radius: 16px; padding: 14px; }}
+  h2 {{ font-size: 17px; margin: 0 0 4px; text-align: right; }}
+  .sub {{ margin: 0 0 10px; font-size: 13px; opacity: .75; text-align: right; }}
+  .hawala {{ margin: 10px 0 12px; font-size: 13px; opacity: .85;
+    text-align: right; }}
+  .row {{ display: flex; gap: 10px; align-items: center; }}
+  .open {{ background: #1c2b45; color: #e8d9a6; border-radius: 999px;
+    padding: 10px 16px; font-size: 14px; text-decoration: none; }}
+  .top {{ display: flex; justify-content: center; gap: 16px; margin-bottom: 6px; }}
 </style>
 </head>
 <body>
@@ -133,12 +133,12 @@ DOWNLOADS = """<!doctype html>
 <title>ڈاؤن لوڈ — ورثة الانبياء</title>
 <style>
 """ + STYLE + """
-  header { padding: 26px 16px 10px; text-align: center; }
-  ol { max-width: 460px; margin: 0 auto; padding: 0 26px 48px 26px; }
-  li { margin: 0 0 14px; font-size: 15px; }
-  li a { display: block; padding: 12px 14px; background: #111c31;
-    border-radius: 12px; text-decoration: none; }
-  li span { display: block; font-size: 12px; opacity: .7; }
+  header {{ padding: 26px 16px 10px; text-align: center; }}
+  ol {{ max-width: 460px; margin: 0 auto; padding: 0 26px 48px 26px; }}
+  li {{ margin: 0 0 14px; font-size: 15px; }}
+  li a {{ display: block; padding: 12px 14px; background: #111c31;
+    border-radius: 12px; text-decoration: none; }}
+  li span {{ display: block; font-size: 12px; opacity: .7; }}
 </style>
 </head>
 <body>
@@ -288,10 +288,15 @@ def main() -> int:
         items.append(item)
 
         # Har hisse ke baad gallery update — beech me ruk bhi jaye to jo ban
-        # chuke hain wo mil jayein.
-        build_episode_pages(items, out_root)
-        build_gallery(items, out_root / "index.html")
-        build_downloads(items, out_root / "download.html")
+        # chuke hain wo mil jayein. Page banane me kuch ghalat ho jaye to
+        # videos zaya na hon, sirf gallery purani rahe.
+        try:
+            build_episode_pages(items, out_root)
+            build_gallery(items, out_root / "index.html")
+            build_downloads(items, out_root / "download.html")
+        except Exception as exc:  # noqa: BLE001
+            log(f"Gallery update fail: {exc}")
+            log(traceback.format_exc())
 
         # Bhaari temp files hata do, warna disk bhar jata hai.
         for name in (
