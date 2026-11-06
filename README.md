@@ -65,12 +65,30 @@ Workflows wapas lag gaye hain:
 **Posting ka switch:** repo **Variable `DRY_RUN`**
 
 - `DRY_RUN = yes` → rozana run sirf video banata hai, **kuch post nahi hota**
-  (review ke liye).
+  (review ke liye), aur **story aage nahi badhti** — kal phir wahi waqiya aata
+  hai jab tak aap `no` na karein.
 - `DRY_RUN = no` → rozana run video banata hai aur YouTube/Facebook par **post**
-  bhi karta hai.
+  bhi karta hai; us ke baad agla waqiya.
 
 Yani pehle videos dekhein, theek lagein, phir `DRY_RUN` ko `no` kar dein —
 us ke baad roz apne aap post hota rahega.
+
+## Kya cheez pipeline ko ghalti se bachati hai
+
+- **`Checks` workflow** — har push par seconds me: saare modules compile hote
+  hain, settings (language, privacy, fonts) jaanchi jati hain, stories poore
+  hain ya nahi, dono zubano me script aur captions banti hain ya nahi, aur
+  Roman mode me Urdu ka koi lafz bacha to nahi.
+- **Video ki aakhri jaanch** — publish se pehle `video_factory/verify.py`
+  ffprobe se dekhta hai: file, size, video stream, awaaz, duration, 1080x1920,
+  h264, aur awaaz khaali to nahi. Jaanch fail ho to **post nahi hota** aur
+  story "posted" mark nahi hoti.
+- **`state.json`** — kharab file par pipeline ruk jati hai; chup chaap reset
+  nahi hoti (warna saari stories dobara post ho jati hain). Save pehle temp
+  file me, phir replace — adhoori file ka khatra nahi.
+
+Hathon se jaanch: `python -m video_factory.selftest`
+
 
 ## Platform setup
 
@@ -199,16 +217,20 @@ Wahan ka entry hamesha `roman.py` ke andar wale lafz par bhaari padta hai.
 ```
 video_factory/
   config.py          env settings
-  i18n.py            Urdu labels, dua, hashtags
+  i18n.py            Urdu/Roman labels, dua, hashtags
+  roman.py           Urdu → Roman (Hindi awaaz ke liye)
   stories.py         stories.json load + validate
   script_builder.py  narration + on-screen cards + title/description
   tts.py             edge-tts voiceover
   visuals.py         background art + ASS captions
   render.py          ffmpeg
+  verify.py          publish se pehle video ki jaanch
+  selftest.py        tez jaanch (CI)
   state.py           posted state
   uploaders/         youtube.py, facebook.py, instagram.py
 content/
   stories.json       waqiyat + hawale
+  roman.json         talaffuz ke apne lafz (Roman mode)
   SOURCES.md         nayi story jodne ka tareeqa
 assets/fonts/        Noto Naskh Arabic + Noto Sans (OFL)
 scripts/

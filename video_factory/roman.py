@@ -26,7 +26,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 ROOT = Path(__file__).resolve().parent.parent
 OVERRIDES_PATH = ROOT / "content" / "roman.json"
@@ -936,14 +936,8 @@ def _convert_token(token: str) -> str:
     return f"{head}{roman}{tail}"
 
 
-def to_roman(text: str) -> str:
-    """Urdu/Arabic text ko Roman (Latin) me badal deta hai.
-
-    Jo pehle se Latin hai (jaise "Like • Share") waisa hi rehta hai.
-    """
-    if not text:
-        return ""
-
+def _prepare(text: str) -> str:
+    """Jumle ko Roman ke liye tayyar karta hai: digits, punctuation, juz."""
     text = text.translate(_DIGITS).translate(_PUNCT)
     text = text.replace("ﷺ", "صلی اللہ علیہ وسلم")
     text = text.replace("«", "").replace("»", "")
@@ -952,4 +946,35 @@ def to_roman(text: str) -> str:
         if urdu in text:
             text = text.replace(urdu, roman)
 
-    return " ".join(_convert_token(token) for token in text.split(" "))
+    return text
+
+
+def to_roman(text: str) -> str:
+    """Urdu/Arabic text ko Roman (Latin) me badal deta hai.
+
+    Jo pehle se Latin hai (jaise "Like • Share") waisa hi rehta hai.
+    """
+    if not text:
+        return ""
+    return " ".join(_convert_token(token) for token in _prepare(text).split(" "))
+
+
+def unknown_words(text: str) -> List[str]:
+    """Wo Urdu lafz jo dictionary me nahi mile — inhi ka talaffuz galat aata hai.
+
+    `selftest` isi se batata hai ke kaunse lafz `content/roman.json` me daalne
+    chahiye.
+    """
+    if not text:
+        return []
+
+    found: List[str] = []
+    for token in _prepare(text).split(" "):
+        _head, core, _tail = _split_edges(token)
+        if not core:
+            continue
+        key = _strip_marks(core)
+        if WORDS.get(core) or WORDS.get(key):
+            continue
+        found.append(key)
+    return found

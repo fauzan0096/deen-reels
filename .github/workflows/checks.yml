@@ -1,0 +1,42 @@
+name: Checks
+
+# Tez jaanch — seconds me, bina ffmpeg aur bina internet.
+# Render shuru hone se pehle syntax/import/settings/stories ki ghalti pakad leta hai.
+
+on:
+  push:
+    paths:
+      - "video_factory/**"
+      - "content/**"
+      - ".github/workflows/checks.yml"
+      - "requirements.txt"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile every module
+        run: python -m compileall -q video_factory scripts
+
+      - name: Self test (settings, stories, script, captions, Roman)
+        env:
+          CHANNEL_NAME: ${{ vars.CHANNEL_NAME || 'ورثة الانبياء' }}
+          VIDEO_LANG: ${{ vars.VIDEO_LANG || 'ur' }}
+          TTS_RATE: ${{ vars.TTS_RATE || '+0%' }}
+          DRY_RUN: "yes"
+        run: python -m video_factory.selftest

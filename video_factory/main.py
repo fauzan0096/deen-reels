@@ -18,6 +18,7 @@ from pathlib import Path
 from .config import ROOT, Config, load_config
 from .i18n import get_lang
 from .render import (
+    RenderError,
     build_slideshow,
     ensure_tools,
     media_duration,
@@ -29,6 +30,7 @@ from .state import load, mark_posted, save
 from .stories import load_stories, next_story
 from .tts import synthesize
 from .uploaders.base import UploadResult
+from .verify import check_video
 from .visuals import (
     IMAGE_SUFFIXES,
     build_captions,
@@ -292,6 +294,15 @@ def render_story(
     size_mb = video_path.stat().st_size / (1024 * 1024)
     log(f"Video taiyar: {video_path} ({size_mb:.1f} MB)")
 
+    # Publish se pehle aakhri jaanch — kharab ya khaali video upar na jaye.
+    report = check_video(video_path, expected_duration=duration)
+    if not report.ok:
+        raise RenderError(
+            "Video jaanch me fail (" + video_path.name + "): "
+            + "; ".join(report.problems)
+        )
+    log(f"Jaanch theek: {report.summary()}")
+
     return {
         "video": video_path,
         "script": script,
@@ -347,13 +358,13 @@ def main() -> int:
     )
 
     # DRY_RUN sirf test hai — us se story aage nahi badhti. Story tabhi
-    # "posted" mark hoti hai jab sach me upload ho jaye (ya koi platform
-    # configured hi na ho, kyunki tab manual upload ka mode hai).
+    # "posted" mark hoti hai jab sach me upload ho jaye, ya jab DRY_RUN off ho
+    # aur koi platform configured hi na ho (manual upload mode).
     posted_any = any(result.ok for result in results)
     no_platforms = not (
         cfg.youtube_ready or cfg.facebook_ready or cfg.instagram_ready
     )
-    if posted_any or no_platforms:
+    if posted_any or (no_platforms and not cfg.dry_run):
         mark_posted(
             state,
             story["id"],
@@ -361,6 +372,11 @@ def main() -> int:
         )
         save(STATE_PATH, state)
         log(f"State update: {story['id']} posted list me add ho gaya.")
+    elif cfg.dry_run:
+        log(
+            "DRY_RUN on hai — story state nahi badla, agli baar phir yahi story "
+            "banegi (review ke liye)."
+        )
     else:
         log("Kuch bhi post nahi hua, isliye state nahi badla (kal phir wahi story aayegi).")
 
